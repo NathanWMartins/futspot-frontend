@@ -27,7 +27,7 @@ function HeaderLocador() {
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                         <SportsSoccerIcon color="primary" />
-                        <Typography variant="h6" fontWeight={700} onClick={() => navigate("/home-locador")} sx={{ cursor: "pointer" }}>
+                        <Typography variant="h6" fontWeight={700} onClick={() => navigate("/locador/home")} sx={{ cursor: "pointer" }}>
                             FutSpot
                         </Typography>
                     </Stack>
