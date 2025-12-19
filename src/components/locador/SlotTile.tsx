@@ -1,12 +1,16 @@
 import { Box, Typography } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
 
-export function SlotTile({ inicio, fim, status }: { inicio: string; fim: string; status: "livre" | "ocupado" }) {
+export function SlotTile({ inicio, fim, status, onSelect }:
+    {
+        inicio: string; fim: string; status: "livre" | "ocupado";
+        onSelect: () => void;
+    }) {
     const isLivre = status === "livre";
 
     return (
-        <Tooltip title={isLivre ? "Livre" : "Ocupado"} arrow>
+        <>
             <Box
+                onClick={onSelect}
                 sx={{
                     borderRadius: 2,
                     p: 1,
@@ -15,6 +19,7 @@ export function SlotTile({ inicio, fim, status }: { inicio: string; fim: string;
                     flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
+                    cursor: "pointer",
                     border: "1px solid rgba(255,255,255,0.08)",
                     bgcolor: isLivre ? "rgba(0,230,118,0.14)" : "rgba(255,82,82,0.14)",
                     color: isLivre ? "#00E676" : "#ff5252",
@@ -24,7 +29,7 @@ export function SlotTile({ inicio, fim, status }: { inicio: string; fim: string;
                         filter: "brightness(1.1)",
                     },
                 }}
-                
+
             >
                 <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
                     {inicio}
@@ -33,6 +38,6 @@ export function SlotTile({ inicio, fim, status }: { inicio: string; fim: string;
                     {fim}
                 </Typography>
             </Box>
-        </Tooltip>
+        </>
     );
 }

@@ -12,7 +12,6 @@ import {
     Select,
     Stack,
     Typography,
-    Chip,
     useMediaQuery,
     useTheme,
 } from "@mui/material";
@@ -20,35 +19,16 @@ import {
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import TodayRoundedIcon from "@mui/icons-material/TodayRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import EventBusyRoundedIcon from "@mui/icons-material/EventBusyRounded";
-import LockRoundedIcon from "@mui/icons-material/LockRounded";
-
-import { api } from "../../services/api"; // ajuste se precisar
+import { api } from "../../services/api";
 import HeaderLocador from "../../components/locador/HeaderLocador";
 import { SlotTile } from "../../components/locador/SlotTile";
-
-type TipoLocal = "society" | "futsal" | "campo";
-
-type LocalResumo = {
-    id: number;
-    nome: string;
-    endereco: string;
-    tipoLocal: TipoLocal;
-};
-
-type SlotStatus = "livre" | "ocupado";
-
-type Slot = {
-    inicio: string; // "10:00"
-    fim: string;    // "11:00"
-    status: SlotStatus;
-    reservadoPor?: string;
-};
+import type { LocalInfo, SlotInfo } from "../../components/locador/DialogInfoAgendamento";
+import SlotInfoDialog from "../../components/locador/DialogInfoAgendamento";
+import { chipLivre, chipOcupado } from "../../utils/ChipsInfoAgendamento";
 
 type DisponibilidadeResponse = {
     fechado: boolean;
-    slots: Slot[];
+    slots: SlotInfo[];
 };
 
 function pad2(n: number) {
@@ -66,64 +46,46 @@ function addDays(date: Date, days: number) {
     return d;
 }
 
-function chipLivre() {
-    return (
-        <Chip
-            size="small"
-            icon={<CheckCircleRoundedIcon />}
-            label="Livre"
-            sx={{ bgcolor: "rgba(0,230,118,0.14)", color: "#00E676" }}
-        />
-    );
-}
-function chipOcupado() {
-    return (
-        <Chip
-            size="small"
-            icon={<EventBusyRoundedIcon />}
-            label="Ocupado"
-            sx={{ bgcolor: "rgba(255,82,82,0.14)", color: "#ff5252" }}
-        />
-    );
-}
-function chipFechado() {
-    return (
-        <Chip
-            size="small"
-            icon={<LockRoundedIcon />}
-            label="Fechado"
-            sx={{ bgcolor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.75)" }}
-        />
-    );
-}
-
 export default function LocadorAgenda() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    // Etapa 1: listar locais (resumo)
     const [loadingLocais, setLoadingLocais] = useState(true);
-    const [locais, setLocais] = useState<LocalResumo[]>([]);
+    const [locais, setLocais] = useState<LocalInfo[]>([]);
     const [localId, setLocalId] = useState<number | "">("");
 
-    // Etapa 2: disponibilidade do local selecionado
     const [date, setDate] = useState<Date>(new Date());
     const [loadingAgenda, setLoadingAgenda] = useState(false);
     const [fechado, setFechado] = useState(false);
-    const [slots, setSlots] = useState<Slot[]>([]);
+    const [slots, setSlots] = useState<SlotInfo[]>([]);
     const [errorAgenda, setErrorAgenda] = useState<string | null>(null);
+
+    const [openSlotDialog, setOpenSlotDialog] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null);
 
     const selectedLocal = useMemo(
         () => locais.find((l) => l.id === localId) ?? null,
         [locais, localId]
     );
 
+    const dateLabel = useMemo(() => formatDateLabel(date), [date]);
+
+    const openDialog = (slot: SlotInfo) => {
+        setSelectedSlot(slot);
+        setOpenSlotDialog(true);
+    };
+
+    const closeDialog = () => {
+        setOpenSlotDialog(false);
+        setSelectedSlot(null);
+    };
+
     useEffect(() => {
         (async () => {
             try {
                 setLoadingLocais(true);
 
-                const { data } = await api.get<LocalResumo[]>("/locais");
+                const { data } = await api.get<LocalInfo[]>("/locais");
 
                 const list = Array.isArray(data) ? data : [];
                 setLocais(list);
@@ -164,23 +126,20 @@ export default function LocadorAgenda() {
                 setLoadingAgenda(false);
             }
         })();
-    }, [localId, date]);
-
-    const dateLabel = useMemo(() => formatDateLabel(date), [date]);
+    }, [localId, date]);    
 
     return (
         <>
             <HeaderLocador />
-            <Box sx={{ px: { xs: 1.5, sm: 3 }, py: 2 }}>
+            <Box sx={{ px: { xs: 1.5, sm: 3 }, py: 3 }}>
                 <Stack spacing={2}>
                     <Box>
                         <Typography sx={{ fontSize: 18, fontWeight: 900 }}>Agenda</Typography>
                         <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                            Selecione um local e veja os slots do dia (1h).
+                            Selecione um local e veja os slots do dia.
                         </Typography>
                     </Box>
 
-                    {/* Filtros */}
                     <Card
                         sx={{
                             borderRadius: 3,
@@ -245,9 +204,12 @@ export default function LocadorAgenda() {
                             <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
                                 <Typography sx={{ fontSize: 13, opacity: 0.75 }}>
                                     {selectedLocal ? selectedLocal.endereco : "—"}
-                                </Typography>
-
-                                {fechado ? chipFechado() : null}
+                                </Typography> 
+                                {/*Legenda cores slots*/}                               
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    {chipLivre()}
+                                    {chipOcupado()}
+                                </Stack>
                             </Stack>
                         </CardContent>
                     </Card>
@@ -296,7 +258,7 @@ export default function LocadorAgenda() {
                             ) : (
                                 <Stack spacing={1}>
                                     {isMobile ? (
-                                        // 📱 MOBILE: lista (mantém como estava)
+                                        // MOBILE
                                         <Stack spacing={1}>
                                             {slots.map((s) => (
                                                 <Box
@@ -309,7 +271,9 @@ export default function LocadorAgenda() {
                                                         alignItems: "center",
                                                         justifyContent: "space-between",
                                                         gap: 1,
+                                                        cursor: "pointer"
                                                     }}
+                                                    onClick={() => openDialog(s)}
                                                 >
                                                     <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
                                                         {s.inicio} – {s.fim}
@@ -328,12 +292,22 @@ export default function LocadorAgenda() {
                                                 gap: 1,
                                             }}
                                         >
+                                            <Typography
+                                                sx={{
+                                                    fontSize: 12,
+                                                    opacity: 0.7,
+                                                    gridColumn: "1 / -1",
+                                                }}
+                                            >
+                                                Clique nos slots para ver detalhes.
+                                            </Typography>
                                             {slots.map((s) => (
                                                 <SlotTile
                                                     key={`${s.inicio}-${s.fim}`}
                                                     inicio={s.inicio}
                                                     fim={s.fim}
                                                     status={s.status}
+                                                    onSelect={() => openDialog(s)}
                                                 />
                                             ))}
                                         </Box>
@@ -345,6 +319,12 @@ export default function LocadorAgenda() {
                     </Card>
                 </Stack>
             </Box>
+            <SlotInfoDialog
+                open={openSlotDialog}
+                onClose={closeDialog}
+                slot={selectedSlot}
+                local={selectedLocal}
+            />
         </>
     );
 }

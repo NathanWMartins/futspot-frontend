@@ -102,7 +102,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const fileRef = useRef<HTMLInputElement | null>(null);
 
-
     const defaultValues: LocalFormValues = useMemo(
         () => ({
             id: initial?.id,
