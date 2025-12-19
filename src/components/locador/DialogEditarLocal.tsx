@@ -22,15 +22,19 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import { ListItemIcon, ListItemText } from "@mui/material";
+
 
 export type TipoLocal = "society" | "futsal" | "campo";
-export type DiaSemana = 0 | 1 | 2 | 3 | 4 | 5 | 6; // dom..sab
+export type DiaSemana = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type HorarioDia = {
     diaSemana: DiaSemana;
     aberto: boolean;
-    inicio: string; // "10:00"
-    fim: string; // "22:00"
+    inicio: string;
+    fim: string;
 };
 
 export type LocalFormValues = {
@@ -40,16 +44,10 @@ export type LocalFormValues = {
     endereco: string;
     tipoLocal: TipoLocal;
     precoHora: number;
-
-    // URLs reais (persistidas). Nunca salve blob: aqui.
     fotos: string[];
-
-    // Horário semanal (1 intervalo contínuo por dia)
     horarios: HorarioDia[];
-
-    // Apenas para o UI / upload (não persistir no banco)
     novasFotos: File[];
-    novasFotosPreview: string[]; // blob: URLs
+    novasFotosPreview: string[];
 };
 
 type Props = {
@@ -87,7 +85,6 @@ function buildDefaultHorarios(initial?: Partial<LocalFormValues> | null): Horari
     const fromInitial = (initial?.horarios as HorarioDia[] | undefined) ?? undefined;
     if (fromInitial?.length) return fromInitial;
 
-    // Padrão: seg-sáb 10–22, domingo fechado
     return dias.map((d) => ({
         diaSemana: d.id,
         aberto: d.id !== 0,
@@ -97,14 +94,14 @@ function buildDefaultHorarios(initial?: Partial<LocalFormValues> | null): Horari
 }
 
 function isValidTimeRange(inicio: string, fim: string) {
-    // compara "HH:MM" lexicograficamente (funciona para 24h)
     return inicio && fim && inicio < fim;
 }
 
 export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: Props) {
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const fileRef = useRef<HTMLInputElement | null>(null);
+
 
     const defaultValues: LocalFormValues = useMemo(
         () => ({
@@ -129,7 +126,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
     useEffect(() => {
         if (!open) return;
 
-        // revoga previews antigos antes de resetar (evita vazamento de memória)
         values.novasFotosPreview?.forEach((u) => {
             if (u.startsWith("blob:")) URL.revokeObjectURL(u);
         });
@@ -139,7 +135,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, defaultValues]);
 
-    // fotos “visíveis” no UI = URLs reais + previews blob
     const allFotos = useMemo(
         () => [...(values.fotos ?? []), ...(values.novasFotosPreview ?? [])],
         [values.fotos, values.novasFotosPreview],
@@ -168,9 +163,9 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
             novasFotosPreview: [...(prev.novasFotosPreview ?? []), previewUrl],
         }));
 
-        setSelectedPhotoIndex((prevIdx) => {
+        setSelectedPhotoIndex(() => {
             const existingCount = values.fotos?.length ?? 0;
-            const newCount = (values.novasFotosPreview?.length ?? 0) + 1; // +1 porque ainda não atualizou state
+            const newCount = (values.novasFotosPreview?.length ?? 0) + 1
             return existingCount + newCount - 1;
         });
 
@@ -183,7 +178,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
         setValues((prev) => {
             const existingCount = prev.fotos?.length ?? 0;
 
-            // removendo foto já persistida
             if (selectedPhotoIndex < existingCount) {
                 const newFotos = prev.fotos.filter((_, i) => i !== selectedPhotoIndex);
                 const newAllLen = newFotos.length + (prev.novasFotosPreview?.length ?? 0);
@@ -193,7 +187,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                 return { ...prev, fotos: newFotos };
             }
 
-            // removendo preview (nova foto)
             const offset = selectedPhotoIndex - existingCount;
             const previewToRemove = prev.novasFotosPreview?.[offset];
             if (previewToRemove?.startsWith("blob:")) URL.revokeObjectURL(previewToRemove);
@@ -226,7 +219,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
         if (!values.tipoLocal) return "Selecione o tipo do local.";
         if (!values.precoHora || values.precoHora <= 0) return "Informe um preço por hora válido.";
 
-        // valida horários (apenas para os dias abertos)
         for (const h of values.horarios) {
             if (!h.aberto) continue;
             if (!h.inicio || !h.fim) return "Preencha início e fim nos dias abertos.";
@@ -248,7 +240,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
             setSaving(true);
             await onSubmit(values);
 
-            // revoga previews após submit (boa prática)
             values.novasFotosPreview?.forEach((u) => {
                 if (u.startsWith("blob:")) URL.revokeObjectURL(u);
             });
@@ -263,13 +254,13 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
         <Dialog
             open={open}
             onClose={onClose}
-            fullScreen={fullScreen}
+            fullScreen={isMobile}
             maxWidth="md"
             fullWidth
             PaperProps={{
                 sx: {
                     backgroundColor: "#121212",
-                    borderRadius: fullScreen ? 0 : 3,
+                    borderRadius: isMobile ? 0 : 3,
                     border: "1px solid rgba(0, 230, 118, 0.15)",
                 },
             }}
@@ -295,7 +286,7 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
 
             <Divider sx={{ opacity: 0.08 }} />
 
-            <DialogContent sx={{ pt: 2 }}>
+            <DialogContent sx={{ pt: 2, px: { xs: 1, sm: 2 }, }}>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="stretch">
                     {/* COLUNA ESQUERDA — FOTOS */}
                     <Box
@@ -378,7 +369,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                             />
                         </Box>
 
-                        {/* miniaturas */}
                         {allFotos?.length > 1 && (
                             <Stack direction="row" spacing={1} sx={{ mt: 1, overflowX: "auto", pb: 0.5 }}>
                                 {allFotos.map((url, idx) => (
@@ -401,17 +391,10 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                                 ))}
                             </Stack>
                         )}
-
-                        <Box sx={{ mt: 1, opacity: 0.7 }}>
-                            <Typography sx={{ fontSize: 12 }}>
-                                *As fotos adicionadas aqui são pré-visualizações. No envio, você deve fazer upload e
-                                salvar URLs reais (não “blob:”).
-                            </Typography>
-                        </Box>
                     </Box>
 
                     {/* COLUNA DIREITA — CAMPOS */}
-                    <Box sx={{ flex: 1 }}>
+                    <Box sx={{ flex: 1, mt: 1 }}>
                         <Stack spacing={2}>
                             <TextField
                                 label="Nome do local"
@@ -436,29 +419,30 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                                 fullWidth
                                 size="medium"
                             />
+                            <Stack direction={"row"} spacing={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="tipo-local-label">Tipo do local</InputLabel>
+                                    <Select
+                                        labelId="tipo-local-label"
+                                        label="Tipo do local"
+                                        value={values.tipoLocal}
+                                        onChange={(e) => handleChange("tipoLocal", e.target.value as TipoLocal)}
+                                    >
+                                        <MenuItem value="society">{formatTipo("society")}</MenuItem>
+                                        <MenuItem value="futsal">{formatTipo("futsal")}</MenuItem>
+                                        <MenuItem value="campo">{formatTipo("campo")}</MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                            <FormControl fullWidth>
-                                <InputLabel id="tipo-local-label">Tipo do local</InputLabel>
-                                <Select
-                                    labelId="tipo-local-label"
-                                    label="Tipo do local"
-                                    value={values.tipoLocal}
-                                    onChange={(e) => handleChange("tipoLocal", e.target.value as TipoLocal)}
-                                >
-                                    <MenuItem value="society">{formatTipo("society")}</MenuItem>
-                                    <MenuItem value="futsal">{formatTipo("futsal")}</MenuItem>
-                                    <MenuItem value="campo">{formatTipo("campo")}</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <TextField
-                                label="Preço por hora (R$)"
-                                type="number"
-                                value={values.precoHora}
-                                onChange={(e) => handleChange("precoHora", Number(e.target.value))}
-                                fullWidth
-                                inputProps={{ min: 0, step: 1 }}
-                            />
+                                <TextField
+                                    label="Preço por hora (R$)"
+                                    type="number"
+                                    value={values.precoHora}
+                                    onChange={(e) => handleChange("precoHora", Number(e.target.value))}
+                                    fullWidth
+                                    inputProps={{ min: 0, step: 1 }}
+                                />
+                            </Stack>
 
                             <Divider sx={{ opacity: 0.08, my: 0.5 }} />
 
@@ -486,14 +470,43 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                                                 <Typography sx={{ fontSize: 13, opacity: 0.85 }}>{d.label}</Typography>
                                             </Box>
 
-                                            <FormControl sx={{ minWidth: 120 }}>
+                                            <FormControl sx={{
+                                                minWidth: isMobile ? 65 : 120,
+                                                "& .MuiSelect-select": {
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    overflow: "visible",
+                                                    textOverflow: "unset",
+                                                    paddingRight: "28px",
+                                                },
+                                            }}>
                                                 <Select
                                                     size="small"
                                                     value={h.aberto ? "aberto" : "fechado"}
                                                     onChange={(e) => setHorario(d.id, { aberto: e.target.value === "aberto" })}
+                                                    renderValue={(value) => {
+                                                        if (!isMobile) return value === "aberto" ? "Aberto" : "Fechado";
+
+                                                        return value === "aberto" ? (
+                                                            <CheckCircleRoundedIcon sx={{ color: "#00E676" }} fontSize="small" />
+                                                        ) : (
+                                                            <CancelRoundedIcon sx={{ color: "rgba(245, 3, 3)" }} fontSize="small" />
+                                                        );
+                                                    }}
                                                 >
-                                                    <MenuItem value="aberto">Aberto</MenuItem>
-                                                    <MenuItem value="fechado">Fechado</MenuItem>
+                                                    <MenuItem value="aberto">
+                                                        <ListItemIcon sx={{ minWidth: 34 }}>
+                                                            <CheckCircleRoundedIcon sx={{ color: "#00E676" }} fontSize="small" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary="Aberto" />
+                                                    </MenuItem>
+
+                                                    <MenuItem value="fechado">
+                                                        <ListItemIcon sx={{ minWidth: 34 }}>
+                                                            <CancelRoundedIcon sx={{ color: "rgba(245, 3, 3)" }} fontSize="small" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary="Fechado" />
+                                                    </MenuItem>
                                                 </Select>
                                             </FormControl>
 
@@ -522,13 +535,6 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                                     );
                                 })}
                             </Stack>
-
-                            <Box sx={{ mt: 0.5, opacity: 0.7 }}>
-                                <Typography sx={{ fontSize: 12 }}>
-                                    Os slots serão gerados automaticamente de 1 em 1 hora dentro do intervalo de cada
-                                    dia.
-                                </Typography>
-                            </Box>
                         </Stack>
                     </Box>
                 </Stack>
