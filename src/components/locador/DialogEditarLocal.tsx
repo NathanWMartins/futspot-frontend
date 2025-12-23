@@ -25,9 +25,9 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { ListItemIcon, ListItemText } from "@mui/material";
+import type { TipoLocal } from "../../services/locadoresService";
 
 
-export type TipoLocal = "society" | "futsal" | "campo";
 export type DiaSemana = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type HorarioDia = {

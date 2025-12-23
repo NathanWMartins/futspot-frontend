@@ -21,19 +21,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import HeaderLocador from "../../components/locador/HeaderLocador";
 import DialogEditarLocal, { type DiaSemana, type HorarioDia, type LocalFormValues } from "../../components/locador/DialogEditarLocal";
 import { api } from "../../services/api";
-
-type TipoLocal = "society" | "futsal" | "campo";
-
-type Local = {
-    id: number;
-    nome: string;
-    descricao: string;
-    endereco: string;
-    tipoLocal: TipoLocal;
-    precoHora: number;
-    fotos?: string[];
-    horarios?: HorarioDia[];
-};
+import { atualizarLocal, criarLocal, uploadFoto, type Local, type TipoLocal } from "../../services/locadoresService";
 
 const dias: { id: DiaSemana; label: string }[] = [
     { id: 0, label: "Dom" },
@@ -45,7 +33,7 @@ const dias: { id: DiaSemana; label: string }[] = [
     { id: 6, label: "Sáb" },
 ];
 
-function buildDefaultHorarios(fromBackend?: HorarioDia[] | undefined): HorarioDia[] {
+export function buildDefaultHorarios(fromBackend?: HorarioDia[] | undefined): HorarioDia[] {
     if (fromBackend?.length) return fromBackend;
 
     return dias.map((d) => ({
@@ -54,17 +42,6 @@ function buildDefaultHorarios(fromBackend?: HorarioDia[] | undefined): HorarioDi
         inicio: "10:00",
         fim: "22:00",
     }));
-}
-
-async function uploadFoto(file: File): Promise<string> {
-    const form = new FormData();
-    form.append("file", file);
-
-    const { data } = await api.post<{ url: string }>("/uploads/foto", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
-
-    return data.url;
 }
 
 function LocadorLocais() {
@@ -79,7 +56,6 @@ function LocadorLocais() {
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
     const [selectedLocal, setSelectedLocal] = useState<LocalFormValues | null>(null);
 
-    // snackbar
     const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: "success" | "error" }>({
         open: false,
         msg: "",
@@ -186,14 +162,15 @@ function LocadorLocais() {
             minimumFractionDigits: 2,
         }).format(valor);
 
-    const handleSubmitDialog = async (values: LocalFormValues) => {
+    const handleSubmitDialog = async (values: LocalFormValues): Promise<void> => {
         try {
             const uploadedUrls =
-                values.novasFotos && values.novasFotos.length > 0
+                values.novasFotos?.length
                     ? await Promise.all(values.novasFotos.map(uploadFoto))
                     : [];
 
             const fotosFinal = [...(values.fotos ?? []), ...uploadedUrls];
+
             const payload = {
                 nome: values.nome,
                 descricao: values.descricao,
@@ -204,21 +181,17 @@ function LocadorLocais() {
                 horarios: values.horarios,
             };
 
-            if (dialogMode === "create") {
-                const { data } = await api.post<Local>("/locais", payload);
-                setLocais((prev) => [data, ...prev]);
-                showSuccess("Local cadastrado com sucesso!");
-            } else {
-                if (!values.id) {
-                    showError("ID do local não encontrado.");
-                    return;
-                }
+            const saved =
+                dialogMode === "create"
+                    ? await criarLocal(payload)
+                    : await atualizarLocal(values.id!, payload);
 
-                const { data } = await api.put<Local>(`/locais/${values.id}`, payload);
-                setLocais((prev) => prev.map((l) => (l.id === data.id ? data : l)));
-                showSuccess("Local atualizado com sucesso!");
-            }
-        } catch (err: any) {
+            // cada tela decide como atualizar a lista
+            if (dialogMode === "create") setLocais((prev) => [saved, ...prev]);
+            else setLocais((prev) => prev.map((l) => (l.id === saved.id ? saved : l)));
+
+            showSuccess(dialogMode === "create" ? "Local cadastrado com sucesso!" : "Local atualizado com sucesso!");
+        } catch (err) {
             console.error(err);
             showError("Erro ao salvar local.");
             throw err;

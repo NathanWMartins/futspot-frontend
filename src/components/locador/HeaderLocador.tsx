@@ -3,10 +3,13 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import { useAuth } from '../../contexts/AuthContext';
 
 function HeaderLocador() {
     const navigate = useNavigate();
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+    const { user } = useAuth();
+    const initial = (user?.nome?.trim()?.[0] ?? user?.email?.[0] ?? "U").toUpperCase();
 
     const openMenu = (event: React.MouseEvent<HTMLElement>) => {
         setMenuAnchor(event.currentTarget);
@@ -36,7 +39,13 @@ function HeaderLocador() {
                             <NotificationsIcon />
                         </IconButton>
                         <IconButton onClick={openMenu}>
-                            <Avatar sx={{ bgcolor: "#00E676" }}>L</Avatar>
+                            <Avatar
+                                src={user?.fotoUrl ?? undefined}
+                                sx={{ bgcolor: "#00E676" }}
+                                imgProps={{ referrerPolicy: "no-referrer" }}
+                            >
+                                {initial}
+                            </Avatar>
                         </IconButton>
 
                         <Menu
@@ -52,7 +61,7 @@ function HeaderLocador() {
                                 Agenda
                             </MenuItem>
 
-                            <MenuItem onClick={() => { closeMenu(); navigate("/locador/perfil"); }}>
+                            <MenuItem onClick={() => { closeMenu(); navigate("/editar-perfil"); }}>
                                 Meu perfil
                             </MenuItem>
 

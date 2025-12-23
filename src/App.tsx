@@ -5,6 +5,7 @@ import JogadorHome from "./pages/jogador/JogadorHome";
 import LocadorHome from "./pages/locador/HomeLocador";
 import LocadorLocais from "./pages/locador/LocalLocador";
 import AgendaLocador from "./pages/locador/AgendaLocador";
+import EditarPerfilPage from "./pages/EditarPerfil";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/locador/home" element={<LocadorHome />} />
         <Route path="/locador/locais" element={<LocadorLocais />} />
         <Route path="/locador/agenda" element={<AgendaLocador />} />
+        <Route path="/editar-perfil" element={<EditarPerfilPage />} />
       </Routes>
     </Box>
   );

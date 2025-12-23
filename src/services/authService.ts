@@ -6,7 +6,9 @@ export type AuthUser = {
     id: number;
     nome?: string;
     email: string;
+    telefone?: string;
     tipoUsuario: TipoUsuario;
+    fotoUrl?: string | null;
 };
 
 export type AuthResponse = {
