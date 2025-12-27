@@ -2,8 +2,8 @@ import { AppBar, Avatar, Box, IconButton, Menu, MenuItem, Stack, Toolbar, Typogr
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import { useAuth } from '../../contexts/AuthContext';
+import FutspotLogo from "../../assets/LogoFutSpot.png";
 
 function HeaderLocador() {
     const navigate = useNavigate();
@@ -28,9 +28,28 @@ function HeaderLocador() {
                 }}
             >
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        <SportsSoccerIcon color="primary" />
-                        <Typography variant="h6" fontWeight={700} onClick={() => navigate("/locador/home")} sx={{ cursor: "pointer" }}>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                        onClick={() => navigate("/locador/home")}
+                        sx={{ cursor: "pointer" }}
+                    >
+                        <Box
+                            component="img"
+                            src={FutspotLogo}
+                            alt="FutSpot"
+                            sx={{
+                                height: 30,
+                                width: "auto",
+                            }}
+                        />
+
+                        <Typography
+                            variant="h6"
+                            fontWeight={700}
+                            sx={{ userSelect: "none" }}
+                        >
                             FutSpot
                         </Typography>
                     </Stack>

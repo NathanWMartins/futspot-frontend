@@ -11,12 +11,12 @@ import {
     Stack,
     TextField,
     Typography,
+    CircularProgress,
     useMediaQuery,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTheme } from "@mui/material/styles";
-import HeaderLocador from "../components/locador/HeaderLocador";
 import { useAuth } from "../contexts/AuthContext";
 import { atualizarPerfil, uploadFotoPerfil } from "../services/userService";
 
@@ -42,6 +42,8 @@ export default function EditarPerfilPage() {
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const [senhaTouched, setSenhaTouched] = useState(false);
     const [confirmTouched, setConfirmTouched] = useState(false);
+
+    const [saving, setSaving] = useState(false);
 
     const senhasIguais = senha.length === 0 && confirmarSenha.length === 0
         ? true
@@ -69,6 +71,8 @@ export default function EditarPerfilPage() {
     };
 
     const handleSalvar = async () => {
+        if (saving) return;
+
         const senhaTrim = senha.trim();
         const confirmTrim = confirmarSenha.trim();
 
@@ -80,11 +84,12 @@ export default function EditarPerfilPage() {
             return;
         }
 
-        if(telefone == ""){
+        if (telefone == "") {
             showError("O campo telefone não pode estar vazio.");
             return;
         }
 
+        setSaving(true);
         try {
             let fotoUrlFinal: string | undefined;
 
@@ -108,12 +113,13 @@ export default function EditarPerfilPage() {
         } catch (err) {
             console.error(err);
             showError("Erro ao salvar perfil.");
+        } finally {
+            setSaving(false);
         }
     };
 
     return (
         <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-            <HeaderLocador />
 
             <Box sx={{ maxWidth: 1120, mx: "auto", p: { xs: 2, md: 3 } }}>
                 <Typography variant="h5" fontWeight={800}>
@@ -182,6 +188,7 @@ export default function EditarPerfilPage() {
                                         variant="outlined"
                                         fullWidth={isMobile}
                                         startIcon={<PhotoCameraIcon />}
+                                        disabled={saving}
                                         sx={{
                                             textTransform: "none",
                                             borderRadius: 10,
@@ -213,6 +220,7 @@ export default function EditarPerfilPage() {
                                     <Stack spacing={2}>
                                         <TextField
                                             label="Nome"
+                                            disabled={saving}
                                             value={nome}
                                             onChange={(e) => setNome(e.target.value)}
                                             fullWidth
@@ -221,6 +229,7 @@ export default function EditarPerfilPage() {
                                             <TextField
                                                 label="E-mail"
                                                 value={email}
+                                                disabled={saving}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 fullWidth
                                                 InputProps={{
@@ -236,6 +245,7 @@ export default function EditarPerfilPage() {
 
                                             <TextField
                                                 label="Telefone"
+                                                disabled={saving}
                                                 value={telefone}
                                                 onChange={(e) => setTelefone(e.target.value)}
                                                 fullWidth
@@ -249,6 +259,7 @@ export default function EditarPerfilPage() {
                                                 onChange={(e) => setSenha(e.target.value)}
                                                 onBlur={() => setSenhaTouched(true)}
                                                 fullWidth
+                                                disabled={saving}
                                             />
 
                                             <TextField
@@ -262,14 +273,20 @@ export default function EditarPerfilPage() {
                                                 helperText={
                                                     mostrarErroSenha ? "As senhas não coincidem." : " "
                                                 }
+                                                disabled={saving}
                                             />
                                         </Stack>
 
-                                        {/* Botão salvar */}
                                         <Box sx={{ display: "flex", justifyContent: "flex-end", pt: 1 }}>
                                             <Button
                                                 variant="contained"
-                                                startIcon={<SaveIcon />}
+                                                startIcon={
+                                                    saving ? (
+                                                        <CircularProgress size={18} thickness={5} sx={{ color: "inherit" }} />
+                                                    ) : (
+                                                        <SaveIcon />
+                                                    )
+                                                }
                                                 sx={{
                                                     textTransform: "none",
                                                     borderRadius: 10,
@@ -277,9 +294,9 @@ export default function EditarPerfilPage() {
                                                     boxShadow: "0 0 16px rgba(0, 230, 118, 0.55)",
                                                 }}
                                                 onClick={handleSalvar}
-                                                disabled={!senhasIguais}
+                                                disabled={!senhasIguais || saving}
                                             >
-                                                Salvar
+                                                {saving ? "Salvando..." : "Salvar"}
                                             </Button>
                                         </Box>
                                     </Stack>

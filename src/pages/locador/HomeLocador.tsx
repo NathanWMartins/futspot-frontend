@@ -15,7 +15,6 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import WavingHandIcon from "@mui/icons-material/WavingHand";
-import HeaderLocador from "../../components/locador/HeaderLocador";
 import { listarMeusLocais, type LocalApi } from "../../services/locaisService";
 import { atualizarLocal, criarLocal, getOcupacaoDoDia, uploadFoto, type OcupacaoItem } from "../../services/locadoresService";
 import { useNavigate } from "react-router-dom";
@@ -195,8 +194,6 @@ export default function LocadorHome() {
     return (
         <>
             <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-                <HeaderLocador />
-
                 <Box
                     sx={{
                         maxWidth: 1120,

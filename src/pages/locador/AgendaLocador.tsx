@@ -20,7 +20,6 @@ import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import TodayRoundedIcon from "@mui/icons-material/TodayRounded";
 import { api } from "../../services/api";
-import HeaderLocador from "../../components/locador/HeaderLocador";
 import { SlotTile } from "../../components/locador/SlotTile";
 import type { LocalInfo, SlotInfo } from "../../components/locador/DialogInfoAgendamento";
 import SlotInfoDialog from "../../components/locador/DialogInfoAgendamento";
@@ -130,7 +129,6 @@ export default function LocadorAgenda() {
 
     return (
         <>
-            <HeaderLocador />
             <Box sx={{ px: { xs: 1.5, sm: 3 }, py: 3 }}>
                 <Stack spacing={2}>
                     <Box>

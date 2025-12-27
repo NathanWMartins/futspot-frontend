@@ -9,12 +9,14 @@ import {
     Stack,
     Chip,
 } from "@mui/material";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import FutspotLogo from "../assets/LogoFutSpot.png";
 import { AuthDialog } from "../components/AuthDialog";
 import { NeonFieldHeroVisual } from "../components/NeonFieldHeroVisual";
+import { useNavigate } from "react-router-dom";
 
 export const LandingPage: React.FC = () => {
     const [authOpen, setAuthOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleOpenAuth = () => setAuthOpen(true);
     const handleCloseAuth = () => setAuthOpen(false);
@@ -23,9 +25,34 @@ export const LandingPage: React.FC = () => {
         <>
             <AppBar position="sticky" elevation={0}>
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        <SportsSoccerIcon />
-                        <Typography variant="h6" fontWeight={700}>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                        onClick={() => navigate("/locador/home")}
+                        sx={{ cursor: "pointer" }}
+                    >
+                        <Box
+                            component="img"
+                            src={FutspotLogo}
+                            alt="FutSpot"
+                            sx={{
+                                height: 40,
+                                width: "auto",
+                            }}
+                        />
+
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontWeight: 800,
+                                color: "#00E676",
+                                letterSpacing: "0.5px",
+                                userSelect: "none",
+                                pt: 2
+                            }}
+                        >
                             FutSpot
                         </Typography>
                     </Stack>

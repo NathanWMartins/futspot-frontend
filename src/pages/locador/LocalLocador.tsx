@@ -18,7 +18,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import PlaceIcon from "@mui/icons-material/Place";
-import HeaderLocador from "../../components/locador/HeaderLocador";
 import DialogEditarLocal, { type DiaSemana, type HorarioDia, type LocalFormValues } from "../../components/locador/DialogEditarLocal";
 import { api } from "../../services/api";
 import { atualizarLocal, criarLocal, uploadFoto, type Local, type TipoLocal } from "../../services/locadoresService";
@@ -202,8 +201,6 @@ function LocadorLocais() {
 
     return (
         <>
-            <HeaderLocador />
-
             <Box
                 sx={{
                     maxWidth: 1120,
