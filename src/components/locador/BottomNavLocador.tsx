@@ -73,7 +73,7 @@ export default function BottomNavLocador() {
                                 width: 24,
                                 height: 24,
                                 display: "block",
-                                opacity: isHome ? 1 : 0.85, 
+                                opacity: isHome ? 1 : 0.85,
                                 transform: isHome ? "scale(1.0)" : "scale(0.95)",
                             }}
                         />

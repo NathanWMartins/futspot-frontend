@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -8,18 +8,39 @@ import {
     Container,
     Stack,
     Chip,
+    Snackbar,
+    Alert,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import FutspotLogo from "../assets/LogoFutSpot.png";
 import { AuthDialog } from "../components/AuthDialog";
 import { NeonFieldHeroVisual } from "../components/NeonFieldHeroVisual";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Typewriter } from "react-simple-typewriter";
 
 export const LandingPage: React.FC = () => {
     const [authOpen, setAuthOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleOpenAuth = () => setAuthOpen(true);
     const handleCloseAuth = () => setAuthOpen(false);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const [snack, setSnack] = useState<null | { severity: "error" | "success" | "info" | "warning"; message: string }>(null);
+
+    useEffect(() => {
+        const state = location.state as any;
+
+        if (state?.snackbar?.message) {
+            setSnack(state.snackbar);
+
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location, navigate]);
 
     return (
         <>
@@ -58,7 +79,7 @@ export const LandingPage: React.FC = () => {
                     </Stack>
 
                     <Button color="inherit" onClick={handleOpenAuth}>
-                        Entrar / Cadastrar
+                        Entrar
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -80,16 +101,26 @@ export const LandingPage: React.FC = () => {
                     >
                         {/* Texto principal */}
                         <Box flex={1}>
-                            <Chip
-                                label="Agende seu jogo em minutos"
-                                color="primary"
-                                variant="outlined"
-                                sx={{ mb: 2, fontWeight: 600 }}
-                            />
+                            {!isMobile ? (
+                                <Chip
+                                    label="Agende seu jogo em minutos"
+                                    color="primary"
+                                    variant="outlined"
+                                    sx={{ mb: 2, fontWeight: 600 }}
+                                />
+                            ) : null}
                             <Typography variant="h3" component="h1" gutterBottom>
                                 Organize suas{" "}
                                 <Box component="span" color="primary.main">
-                                    partidas
+                                    <Typewriter
+                                        words={["partidas", "reservas", "quadras"]}
+                                        loop={0}           
+                                        cursor
+                                        cursorStyle="|"
+                                        typeSpeed={80}
+                                        deleteSpeed={50}
+                                        delaySpeed={1500}
+                                    />
                                 </Box>{" "}
                                 sem dor de cabeça.
                             </Typography>
@@ -98,23 +129,17 @@ export const LandingPage: React.FC = () => {
                                 lugar. Encontre horários disponíveis, reserve sua quadra
                                 favorita e gerencie seus agendamentos de forma simples e rápida.
                             </Typography>
-
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                                <Button
-                                    variant="contained"
-                                    size="large"
-                                    onClick={handleOpenAuth}
-                                >
-                                    Começar agora
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="large"
-                                    onClick={handleOpenAuth}
-                                >
-                                    Sou locador de quadra
-                                </Button>
-                            </Stack>
+                            {!isMobile ? (
+                                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                                    <Button
+                                        variant="contained"
+                                        size="large"
+                                        onClick={handleOpenAuth}
+                                    >
+                                        Começar agora
+                                    </Button>
+                                </Stack>
+                            ) : null}
                         </Box>
 
                         <Box flex={1} sx={{ width: "100%", ml: { md: 6, lg: 10 } }}>
@@ -125,6 +150,16 @@ export const LandingPage: React.FC = () => {
             </Box>
 
             <AuthDialog open={authOpen} onClose={handleCloseAuth} />
+            <Snackbar
+                open={Boolean(snack)}
+                autoHideDuration={3500}
+                onClose={() => setSnack(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+                <Alert severity={snack?.severity ?? "info"} onClose={() => setSnack(null)} variant="filled">
+                    {snack?.message}
+                </Alert>
+            </Snackbar>
         </>
     );
 };

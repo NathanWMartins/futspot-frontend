@@ -26,7 +26,8 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { ListItemIcon, ListItemText } from "@mui/material";
 import type { TipoLocal } from "../../services/locadoresService";
-
+import { fetchAddressByCep } from "../../services/cepService";
+import { isValidCEP } from "../../utils/cep";
 
 export type DiaSemana = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -42,6 +43,8 @@ export type LocalFormValues = {
     nome: string;
     descricao: string;
     endereco: string;
+    numero: string;
+    cep: string;
     tipoLocal: TipoLocal;
     precoHora: number;
     fotos: string[];
@@ -108,6 +111,8 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
             nome: initial?.nome ?? "",
             descricao: initial?.descricao ?? "",
             endereco: initial?.endereco ?? "",
+            numero: initial?.numero ?? "",
+            cep: initial?.cep ?? "",
             tipoLocal: (initial?.tipoLocal as TipoLocal) ?? "society",
             precoHora: typeof initial?.precoHora === "number" ? initial.precoHora : 0,
             fotos: initial?.fotos ?? [],
@@ -121,6 +126,7 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
     const [values, setValues] = useState<LocalFormValues>(defaultValues);
     const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
     const [saving, setSaving] = useState(false);
+    const [cepLoading, setCepLoading] = useState(false);
 
     useEffect(() => {
         if (!open) return;
@@ -237,7 +243,15 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
 
         try {
             setSaving(true);
-            await onSubmit(values);
+            const enderecoFinal = [
+                values.endereco,
+                values.numero ? `nº ${values.numero}` : "",
+                values.cep ? `CEP ${values.cep}` : "",
+            ].filter(Boolean).join(" • ");
+
+            const payload = { ...values, endereco: enderecoFinal };
+            await onSubmit(payload);
+
 
             values.novasFotosPreview?.forEach((u) => {
                 if (u.startsWith("blob:")) URL.revokeObjectURL(u);
@@ -248,6 +262,35 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
             setSaving(false);
         }
     };
+
+    const handleFetchCep = async () => {
+        if (!isValidCEP(values.cep ?? "")) {
+            alert("CEP inválido. Informe 8 dígitos.");
+            return;
+        }
+
+        try {
+            setCepLoading(true);
+
+            const data = await fetchAddressByCep(values.cep);
+
+            const enderecoBase = [
+                data.logradouro,
+                data.bairro,
+                `${data.localidade} - ${data.uf}`,
+            ]
+                .filter(Boolean)
+                .join(", ");
+
+            handleChange("endereco", enderecoBase);
+        } catch (error: any) {
+            alert(error.message || "Falha ao consultar CEP.");
+        } finally {
+            setCepLoading(false);
+        }
+    };
+
+
 
     return (
         <Dialog
@@ -411,13 +454,50 @@ export default function LocalDialog({ open, mode, initial, onClose, onSubmit }: 
                                 size="medium"
                             />
 
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                                <TextField
+                                    label="CEP"
+                                    value={values.cep ?? ""}
+                                    onChange={(e) => handleChange("cep", e.target.value)}
+                                    fullWidth
+                                    size="medium"
+                                    placeholder="00000-000"
+                                    inputProps={{ inputMode: "numeric" }}
+                                />
+
+                                <Button
+                                    variant="contained"
+                                    onClick={handleFetchCep}
+                                    disabled={saving}
+                                    sx={{
+                                        textTransform: "none",
+                                        minWidth: { xs: "100%", sm: 140 },
+                                        height: { xs: 44, sm: "auto" },
+                                        alignSelf: { xs: "stretch", sm: "center" },
+                                    }}
+                                >
+                                    {cepLoading ? "Buscando..." : "Buscar"}
+                                </Button>
+                            </Stack>
+
                             <TextField
-                                label="Endereço"
+                                label="Endereço (rua, bairro, cidade/UF)"
                                 value={values.endereco}
                                 onChange={(e) => handleChange("endereco", e.target.value)}
                                 fullWidth
                                 size="medium"
                             />
+
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                                <TextField
+                                    label="Número"
+                                    value={values.numero ?? ""}
+                                    onChange={(e) => handleChange("numero", e.target.value)}
+                                    fullWidth
+                                    size="medium"
+                                />
+                            </Stack>
+
                             <Stack direction={"row"} spacing={2}>
                                 <FormControl fullWidth>
                                     <InputLabel id="tipo-local-label">Tipo do local</InputLabel>

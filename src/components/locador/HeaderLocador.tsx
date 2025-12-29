@@ -8,7 +8,7 @@ import FutspotLogo from "../../assets/LogoFutSpot.png";
 function HeaderLocador() {
     const navigate = useNavigate();
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
     const initial = (user?.nome?.trim()?.[0] ?? user?.email?.[0] ?? "U").toUpperCase();
 
     const openMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -80,11 +80,15 @@ function HeaderLocador() {
                                 Agenda
                             </MenuItem>
 
-                            <MenuItem onClick={() => { closeMenu(); navigate("/editar-perfil"); }}>
+                            <MenuItem onClick={() => { closeMenu(); navigate("/locador/editar-perfil"); }}>
                                 Meu perfil
                             </MenuItem>
 
-                            <MenuItem onClick={() => { closeMenu(); navigate("/"); }}>
+                            <MenuItem onClick={() => {
+                                closeMenu();
+                                signOut();
+                                navigate("/");
+                            }}>
                                 Sair
                             </MenuItem>
                         </Menu>

@@ -19,13 +19,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../contexts/AuthContext";
 import { atualizarPerfil, uploadFotoPerfil } from "../services/userService";
+import { useNavigate } from "react-router-dom";
 
 export default function EditarPerfilPage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const { user, token, signIn } = useAuth();
-
+    const { user, token, signIn, signOut } = useAuth();
+    const navigate = useNavigate();
     const fileRef = useRef<HTMLInputElement | null>(null);
 
     const firstNameInitial = useMemo(() => {
@@ -116,7 +117,7 @@ export default function EditarPerfilPage() {
         } finally {
             setSaving(false);
         }
-    };
+    }
 
     return (
         <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
@@ -277,7 +278,7 @@ export default function EditarPerfilPage() {
                                             />
                                         </Stack>
 
-                                        <Box sx={{ display: "flex", justifyContent: "flex-end", pt: 1 }}>
+                                        <Box sx={{ display: "flex", justifyContent: "flex-end", pt: 1, gap: 2 }}>
                                             <Button
                                                 variant="contained"
                                                 startIcon={
@@ -297,6 +298,23 @@ export default function EditarPerfilPage() {
                                                 disabled={!senhasIguais || saving}
                                             >
                                                 {saving ? "Salvando..." : "Salvar"}
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                fullWidth
+                                                onClick={() => {
+                                                    signOut();
+                                                    navigate("/");
+                                                }}
+                                                sx={{
+                                                    width: 90,
+                                                    textTransform: "none",
+                                                    borderRadius: 10,
+                                                    px: 2.2,
+                                                }}
+                                            >
+                                                Sair
                                             </Button>
                                         </Box>
                                     </Stack>
