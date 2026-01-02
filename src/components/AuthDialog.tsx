@@ -73,7 +73,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
 
             signIn({ user: data.user, token });
 
-            if (data.user.tipoUsuario === "jogador") navigate("/home-jogador");
+            if (data.user.tipoUsuario === "jogador") navigate("/jogador/home");
             else navigate("/locador/home");
 
             onClose();

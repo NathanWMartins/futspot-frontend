@@ -7,6 +7,8 @@ import AgendaLocador from "./pages/locador/AgendaLocador";
 import EditarPerfilPage from "./pages/EditarPerfil";
 import LocadorLayout from "./pages/locador/LocadorLayout";
 import RequireAuth from "./routes/RequireAuth";
+import JogadorHome from "./pages/jogador/JogadorHome";
+import JogadorLayout from "./pages/jogador/JogadorLayout";
 
 function App() {
   return (
@@ -21,6 +23,9 @@ function App() {
             <Route path="locais" element={<LocadorLocais />} />
             <Route path="agenda" element={<AgendaLocador />} />
             <Route path="editar-perfil" element={<EditarPerfilPage />} />
+          </Route>
+          <Route path="/jogador" element={<JogadorLayout/>}>
+            <Route path="home" element={<JogadorHome/>} />
           </Route>
         </Route>
       </Routes>
