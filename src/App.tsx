@@ -9,6 +9,7 @@ import LocadorLayout from "./pages/locador/LocadorLayout";
 import RequireAuth from "./routes/RequireAuth";
 import JogadorHome from "./pages/jogador/JogadorHome";
 import JogadorLayout from "./pages/jogador/JogadorLayout";
+import ResultadosJogador from "./pages/jogador/ResultadosJogador";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           </Route>
           <Route path="/jogador" element={<JogadorLayout/>}>
             <Route path="home" element={<JogadorHome/>} />
+            <Route path="resultados" element={<ResultadosJogador />} />
           </Route>
         </Route>
       </Routes>

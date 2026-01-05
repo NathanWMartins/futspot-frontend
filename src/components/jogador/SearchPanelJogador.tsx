@@ -20,6 +20,7 @@ import type { PeriodoDia, Modalidade } from "../../types/local";
 import { PERIODOS, TIPOS_QUADRA } from "../../types/local";
 
 type Props = {
+  loadingSearch?: boolean;
   onSearch: (filters: {
     cidade: string | null;
     tipos: Modalidade[];
@@ -28,7 +29,7 @@ type Props = {
   }) => void;
 };
 
-export default function SearchPanelJogador({ onSearch }: Props) {
+export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
   const [cidade, setCidade] = useState<string | null>(null);
   const [cidadeInput, setCidadeInput] = useState("");
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
@@ -58,16 +59,9 @@ export default function SearchPanelJogador({ onSearch }: Props) {
 
   const tipoLabel =
     tipos.length === 0
-      ? "Tipo"
+      ? "Tipo de quadra"
       : TIPOS_QUADRA.filter((t) => tipos.includes(t.key))
           .map((t) => t.label)
-          .join(", ");
-
-  const periodoLabel =
-    periodos.length === 0
-      ? "Período"
-      : PERIODOS.filter((p) => periodos.includes(p.key))
-          .map((p) => p.label)
           .join(", ");
 
   async function ensureIbgeLoaded() {
@@ -317,7 +311,7 @@ export default function SearchPanelJogador({ onSearch }: Props) {
                   color: "#fff",
                   bgcolor: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: 2, // ✅
+                  borderRadius: 2,
                   textTransform: "none",
                   minWidth: 160,
                   height: 52,
@@ -332,32 +326,11 @@ export default function SearchPanelJogador({ onSearch }: Props) {
                 {tipoLabel}
               </Button>
               <Button
-                variant="outlined"
-                onClick={(e) => setAnchorPeriodo(e.currentTarget)}
-                sx={{
-                  color: "#fff",
-                  bgcolor: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: 2, // ✅
-                  textTransform: "none",
-                  minWidth: 160,
-                  height: 52,
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    bgcolor: "rgba(255,255,255,0.10)",
-                    borderColor: "rgba(255,255,255,0.25)",
-                  },
-                }}
-                startIcon={<AccessTimeOutlinedIcon />}
-              >
-                {periodoLabel}
-              </Button>
-              ={" "}
-              <Button
                 variant="contained"
                 onClick={() =>
                   onSearch({ cidade, tipos, periodos, data: dataISO })
                 }
+                disabled={loadingSearch}
                 sx={{
                   borderRadius: 2,
                   textTransform: "none",
@@ -369,7 +342,7 @@ export default function SearchPanelJogador({ onSearch }: Props) {
                   "&:hover": { bgcolor: "#01a847ff" },
                 }}
               >
-                Procurar
+                {loadingSearch ? "Buscando..." : "Procurar"}
               </Button>
             </Stack>
           </Stack>
@@ -483,37 +456,6 @@ export default function SearchPanelJogador({ onSearch }: Props) {
               <Divider
                 sx={{ my: 0.75, borderColor: "rgba(255,255,255,0.08)" }}
               />
-
-              {/* Período (clean select) */}
-              <TextField
-                select
-                label="Período"
-                value={periodos}
-                sx={{
-                  "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.75)" },
-                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                }}
-                SelectProps={{
-                  multiple: true,
-                  renderValue: (selected) => {
-                    const arr = Array.isArray(selected) ? selected : [];
-                    return arr.length ? arr.join(", ") : "Selecionar";
-                  },
-                }}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const arr =
-                    typeof value === "string" ? value.split(",") : value;
-                  setPeriodos(arr as PeriodoDia[]);
-                }}
-              >
-                {PERIODOS.map((p) => (
-                  <MenuItem key={p.key} value={p.key}>
-                    <Checkbox checked={periodos.includes(p.key)} />
-                    {p.label}
-                  </MenuItem>
-                ))}
-              </TextField>
             </Stack>
 
             <Box sx={{ mt: 1.5, mx: -2, mb: -2 }}>
@@ -523,6 +465,7 @@ export default function SearchPanelJogador({ onSearch }: Props) {
                 onClick={() =>
                   onSearch({ cidade, tipos, periodos, data: dataISO })
                 }
+                disabled={loadingSearch}
                 sx={{
                   borderRadius: "0 0 16px 16px",
                   textTransform: "none",
@@ -533,7 +476,7 @@ export default function SearchPanelJogador({ onSearch }: Props) {
                   "&:hover": { bgcolor: "#00C853" },
                 }}
               >
-                Procurar
+                {loadingSearch ? "Buscando..." : "Procurar"}
               </Button>
             </Box>
           </Stack>
