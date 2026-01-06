@@ -10,6 +10,9 @@ export type LocalCardDTO = {
   cidade?: string | null;
   tipoLocal?: Modalidade;
   precoHora?: number | null;
+
+  rating?: number | null;
+  totalAvaliacoes?: number | null;
 };
 
 export type SearchFilters = {

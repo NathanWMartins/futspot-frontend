@@ -8,6 +8,7 @@ import {
   CardActionArea,
   CardContent,
   Chip,
+  Rating,
 } from "@mui/material";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -155,7 +156,7 @@ export default function ResultadosJogador() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", py: 2 }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ pb: { xs: 10, md: 3 } }}>
         {/* Card compacto no topo (clicável) */}
         <Card
           sx={{
@@ -182,7 +183,7 @@ export default function ResultadosJogador() {
                 </Box>
 
                 <Typography
-                  sx={{ color: "#00E676", fontWeight: 900, fontSize: 13 }}
+                  sx={{ color: "#00E676", fontWeight: 900, fontSize: 13, fontFamily: "'Poppins', sans-serif", }}
                 >
                   Filtrar
                 </Typography>
@@ -244,7 +245,6 @@ export default function ResultadosJogador() {
                     </Box>
 
                     <CardContent sx={{ flex: 1, py: 1.5 }}>
-                      {/* topo: nome + preço (mobile) / nome + preço (desktop) */}
                       <Stack
                         direction="row"
                         alignItems="flex-start"
@@ -255,6 +255,31 @@ export default function ResultadosJogador() {
                           <Typography fontWeight={900} sx={{ mb: 0.2 }} noWrap>
                             {l.nome}
                           </Typography>
+                          {typeof l.rating === "number" ? (
+                            <Stack
+                              direction="row"
+                              spacing={0.75}
+                              alignItems="center"
+                              sx={{ mt: 1 }}
+                            >
+                              <Rating
+                                value={l.rating ?? 0}
+                                precision={0.5}
+                                readOnly
+                                size="small"
+                              />
+                              <Typography sx={{ fontSize: 12, opacity: 0.75 }}>
+                                {(l.rating ?? 0).toFixed(1)}
+                                {l.totalAvaliacoes
+                                  ? ` (${l.totalAvaliacoes})`
+                                  : ""}
+                              </Typography>
+                            </Stack>
+                          ) : (
+                            <Typography sx={{ fontSize: 12, opacity: 0.6 }}>
+                              Sem avaliações
+                            </Typography>
+                          )}
 
                           <Typography
                             sx={{
@@ -271,9 +296,26 @@ export default function ResultadosJogador() {
                           </Typography>
                         </Box>
 
-                        {/* preço sempre visível e legível */}
                         <Box sx={{ flexShrink: 0 }}>
-                          <PriceTag value={l.precoHora ?? 0} />
+                          <Stack
+                            spacing={1.2} alignItems="flex-end" 
+                            sx={{ flexShrink: 0, mt: 1 }}
+                          >
+                            <PriceTag value={l.precoHora ?? 0}/>
+
+                            {l.tipoLocal ? (
+                              <Chip
+                                size="small"
+                                label={labelTipo[l.tipoLocal]}
+                                sx={{
+                                  bgcolor: "rgba(0,230,118,0.18)",
+                                  border: "1px solid rgba(0,230,118,0.25)",
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              />
+                            ) : null}
+                          </Stack>
                         </Box>
                       </Stack>
 
@@ -282,7 +324,7 @@ export default function ResultadosJogador() {
                         spacing={1}
                         sx={{ mt: 1, alignItems: "center" }}
                       >
-                        {l.tipoLocal ? (
+                        {/* {l.tipoLocal ? (
                           <Chip
                             size="small"
                             label={labelTipo[l.tipoLocal]}
@@ -293,7 +335,7 @@ export default function ResultadosJogador() {
                               fontWeight: 900,
                             }}
                           />
-                        ) : null}
+                        ) : null} */}
                       </Stack>
                     </CardContent>
                   </Stack>

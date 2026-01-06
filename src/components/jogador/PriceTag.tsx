@@ -7,8 +7,8 @@ export function PriceTag({ value }: { value: number }) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5, mt: isMobile ? 0 : 1 }}>
-      <Typography sx={{ fontWeight: isMobile ? 700 : 900, fontSize: isMobile ? 22 : 28, opacity: 0.85, lineHeight: 1 }}>
+    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5, mt: isMobile ? 0 : 2 }}>
+      <Typography sx={{ fontWeight: isMobile ? 700 : 900, fontSize: isMobile ? 22 : 28, lineHeight: 1 }}>
         R$
       </Typography>
 
@@ -20,7 +20,7 @@ export function PriceTag({ value }: { value: number }) {
         sx={{
           fontWeight: isMobile ? 700 : 900,
           fontSize: 14,
-          lineHeight: isMobile ? 0.7 : 1,
+          lineHeight: isMobile ? 0.8 : 1,
           mt: 0.45,
           opacity: 0.85,
         }}

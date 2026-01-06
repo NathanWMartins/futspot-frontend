@@ -14,7 +14,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
-import FutspotLogo from "../../assets/LogoFutSpot.png";
+import FutspotLogo from "../../assets/LogoFutSpotDark.png";
 
 export default function HeaderJogador() {
     const navigate = useNavigate();
@@ -54,12 +54,13 @@ export default function HeaderJogador() {
                         variant="h6"
                         fontWeight={800}
                         sx={{
+                            fontFamily: "'Poppins', sans-serif",
                             userSelect: "none",
                             color: "#00E676",
-                            letterSpacing: 0.3,
+                            letterSpacing: 0.4,
                         }}
                     >
-                        FutSpot
+                        Fut<span style={{ color: "#fff" }}>Spot</span>
                     </Typography>
                 </Stack>
 

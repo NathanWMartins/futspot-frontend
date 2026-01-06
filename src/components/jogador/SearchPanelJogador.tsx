@@ -340,6 +340,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                   bgcolor: "#00C853",
                   color: "#ffffffff",
                   "&:hover": { bgcolor: "#01a847ff" },
+                  fontFamily: "'Poppins', sans-serif",
                 }}
               >
                 {loadingSearch ? "Buscando..." : "Procurar"}
@@ -428,6 +429,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                 label="Tipo de quadra"
                 value={tipos}
                 sx={{
+                  fontFamily: "'Poppins', sans-serif",
                   "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.75)" },
                   "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                 }}

@@ -96,7 +96,8 @@ export default function BottomNavJogador() {
                             sx={{
                                 width: 26,
                                 height: 26,
-                                bgcolor: "#00E676",
+                                bgcolor: "#131313ff",
+                                color: "#ffffff",
                                 border: current === PROFILE_PATH ? "2px solid #00E676" : "2px solid transparent",
                             }}
                             imgProps={{ referrerPolicy: "no-referrer" }}
