@@ -183,7 +183,12 @@ export default function ResultadosJogador() {
                 </Box>
 
                 <Typography
-                  sx={{ color: "#00E676", fontWeight: 900, fontSize: 13, fontFamily: "'Poppins', sans-serif", }}
+                  sx={{
+                    color: "#00E676",
+                    fontWeight: 900,
+                    fontSize: 13,
+                    fontFamily: "'Poppins', sans-serif",
+                  }}
                 >
                   Filtrar
                 </Typography>
@@ -214,7 +219,14 @@ export default function ResultadosJogador() {
                 }}
               >
                 <CardActionArea
-                  onClick={() => navigate(`/jogador/local/${l.id}`)}
+                  onClick={() =>
+                    navigate(`/jogador/local/${l.id}`, {
+                      state: {
+                        local: l,
+                        filtros,
+                      },
+                    })
+                  }
                 >
                   <Stack
                     direction={{ xs: "column", md: "row" }}
@@ -298,10 +310,11 @@ export default function ResultadosJogador() {
 
                         <Box sx={{ flexShrink: 0 }}>
                           <Stack
-                            spacing={1.2} alignItems="flex-end" 
+                            spacing={1.2}
+                            alignItems="flex-end"
                             sx={{ flexShrink: 0, mt: 1 }}
                           >
-                            <PriceTag value={l.precoHora ?? 0}/>
+                            <PriceTag value={l.precoHora ?? 0} />
 
                             {l.tipoLocal ? (
                               <Chip

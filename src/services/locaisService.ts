@@ -38,6 +38,12 @@ export async function listarLocaisPorCidade(params: {
 }
 
 // Funções Jogador
+export type DisponibilidadePorDataResponse = {
+  localId: number;
+  data: string;
+  slotsDisponiveis: string[];
+};
+
 export async function searchLocais(
   filters: SearchFilters
 ): Promise<LocalCardDTO[]> {
@@ -51,4 +57,17 @@ export async function searchLocais(
 
   const { data } = await api.get<LocalCardDTO[]>("/locais/search", { params });
   return data;
+}
+
+export async function getDisponibilidadePorData(localId: number, data: string) {
+  const res = await api.get<DisponibilidadePorDataResponse>(
+    `/locais/${localId}/disponibilidade/data`,
+    { params: { data } }
+  );
+  return {
+    ...res.data,
+    slotsDisponiveis: Array.isArray(res.data?.slotsDisponiveis)
+      ? res.data.slotsDisponiveis
+      : [],
+  };
 }

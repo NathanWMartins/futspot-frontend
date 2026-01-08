@@ -1,5 +1,18 @@
 export type Modalidade = "todos" | "society" | "futsal" | "campo";
 export type PeriodoDia = "manha" | "tarde" | "noite";
+export type SlotDTO = { inicio: string; fim: string; status: "livre" | "ocupado" };
+
+export type DisponibilidadeDTO = {
+  fechado: boolean;
+  slots: SlotDTO[];
+};
+
+export type HorarioFuncionamentoDTO = {
+  diaSemana: number;
+  aberto: boolean;
+  inicio: string | null;
+  fim: string | null;
+};
 
 export type LocalCardDTO = {
   id: number;
@@ -13,6 +26,7 @@ export type LocalCardDTO = {
 
   rating?: number | null;
   totalAvaliacoes?: number | null;
+  horarios?: HorarioFuncionamentoDTO[];
 };
 
 export type SearchFilters = {

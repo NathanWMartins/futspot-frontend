@@ -37,6 +37,8 @@ export default function HomeJogador() {
 
       const locais: LocalCardDTO[] = await searchLocais(filters);
 
+      console.log("Locais encontrados:", locais);
+
       if (!locais.length) {
         setSnack({
           open: true,

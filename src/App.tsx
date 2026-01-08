@@ -10,6 +10,7 @@ import RequireAuth from "./routes/RequireAuth";
 import JogadorHome from "./pages/jogador/JogadorHome";
 import JogadorLayout from "./pages/jogador/JogadorLayout";
 import ResultadosJogador from "./pages/jogador/ResultadosJogador";
+import LocalDetalheJogador from "./pages/jogador/LocalDetalheJogador";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/jogador" element={<JogadorLayout/>}>
             <Route path="home" element={<JogadorHome/>} />
             <Route path="resultados" element={<ResultadosJogador />} />
+            <Route path="local/:id" element={<LocalDetalheJogador />} />
           </Route>
         </Route>
       </Routes>
