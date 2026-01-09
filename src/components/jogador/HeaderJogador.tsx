@@ -92,10 +92,10 @@ export default function HeaderJogador() {
                         <MenuItem
                             onClick={() => {
                                 closeMenu();
-                                navigate("/jogador/agendamentos");
+                                navigate("/jogador/agenda");
                             }}
                         >
-                            Meus agendamentos
+                            Agenda
                         </MenuItem>
 
                         <MenuItem
@@ -104,7 +104,7 @@ export default function HeaderJogador() {
                                 navigate("/jogador/editar-perfil");
                             }}
                         >
-                            Meu perfil
+                            Perfil
                         </MenuItem>
 
                         <MenuItem

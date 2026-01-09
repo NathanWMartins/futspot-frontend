@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -8,6 +9,7 @@ import {
   Divider,
   IconButton,
   Rating,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -44,6 +46,16 @@ export default function LocalDetalheJogador() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [snack, setSnack] = useState<{
+      open: boolean;
+      msg: string;
+      severity: "success" | "error";
+    }>({
+      open: false,
+      msg: "",
+      severity: "success",
+    });
+
   const location = useLocation();
   const navState = location.state as { local?: any; filtros?: any } | undefined;
 
@@ -74,11 +86,16 @@ export default function LocalDetalheJogador() {
   const [reservando, setReservando] = useState(false);
   const [carregandoSlots, setCarregandoSlots] = useState(false);
 
+  const showError = (msg: string) =>
+    setSnack({ open: true, msg, severity: "error" });
+  const showSuccess = (msg: string) =>
+    setSnack({ open: true, msg, severity: "success" });
+
   useEffect(() => {
     const loadSlots = async () => {
       if (!data || !id) return;
       setCarregandoSlots(true);
-      
+
       try {
         const resp = await getDisponibilidadePorData(Number(id), data);
         const slots = Array.isArray(resp?.slotsDisponiveis)
@@ -94,7 +111,7 @@ export default function LocalDetalheJogador() {
         console.error(e);
         setLocal((prev) => (prev ? { ...prev, slotsDisponiveis: [] } : prev));
         setHorario("");
-      }finally{
+      } finally {
         setCarregandoSlots(false);
       }
     };
@@ -119,7 +136,7 @@ export default function LocalDetalheJogador() {
         inicio: horario,
       });
 
-      alert("Reserva confirmada!");
+      showSuccess("Reserva confirmada com sucesso!");
 
       const resp = await getDisponibilidadePorData(local.id, data);
 
@@ -131,22 +148,24 @@ export default function LocalDetalheJogador() {
 
       setLocal((prev) => (prev ? { ...prev, slotsDisponiveis } : prev));
       setHorario("");
+
+      navigate("/jogador/agenda");
     } catch (e: any) {
       console.error(e);
 
       const status = e?.response?.status;
 
       if (status === 409) {
-        alert("Esse horário já foi reservado. Selecione outro.");
+        showError("Esse horário já foi reservado. Selecione outro.");
         return;
       }
 
       if (status === 401) {
-        alert("Sua sessão expirou. Faça login novamente.");
+        showError("Sua sessão expirou. Faça login novamente.");
         return;
       }
 
-      alert("Não foi possível realizar a reserva. Tente novamente.");
+      showError("Não foi possível realizar a reserva. Tente novamente.");
     } finally {
       setReservando(false);
     }
@@ -392,6 +411,21 @@ export default function LocalDetalheJogador() {
           </Stack>
         </Box>
       </Container>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3500}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
