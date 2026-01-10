@@ -12,6 +12,7 @@ import JogadorLayout from "./pages/jogador/JogadorLayout";
 import ResultadosJogador from "./pages/jogador/ResultadosJogador";
 import LocalDetalheJogador from "./pages/jogador/LocalDetalheJogador";
 import AgendaJogador from "./pages/jogador/AgendaJogador";
+import PerfilJogador from "./pages/jogador/PerfilJogador";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="resultados" element={<ResultadosJogador />} />
             <Route path="local/:id" element={<LocalDetalheJogador />} />
             <Route path="agenda" element={<AgendaJogador />} />
+            <Route path="editar-perfil" element={<PerfilJogador/> } />
           </Route>
         </Route>
       </Routes>

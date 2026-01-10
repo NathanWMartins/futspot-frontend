@@ -8,3 +8,18 @@ export function formatarDataBR(data: string) {
 
     return `${dia}/${mes}/${ano}`;
 }
+
+export function tempoNoApp(createdAtISO: string) {
+    const created = new Date(createdAtISO);
+    const now = new Date();
+    const months =
+        (now.getFullYear() - created.getFullYear()) * 12 + (now.getMonth() - created.getMonth());
+
+    if (!Number.isFinite(months) || months < 0) return "Novo";
+    if (months < 1) return "Novo";
+    if (months === 1) return "1 mês";
+    if (months < 12) return `${months} meses`;
+
+    const years = Math.floor(months / 12);
+    return years === 1 ? "1 ano" : `${years} anos`;
+}
