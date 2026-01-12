@@ -12,16 +12,22 @@ import {
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { useNavigate } from "react-router-dom";
 
-import ProfileHeaderCard from "../../components/jogador/perfil/ProfileHeaderCard";
-import ProfileTabs from "../../components/jogador/perfil/ProfileTabs";
-import ContaSection from "../../components/jogador/perfil/ContaSection";
-import EditarPerfilDialog from "../../components/jogador/perfil/EditarPerfilDialog";
-import AlterarSenhaDialog from "../../components/jogador/perfil/AlterarSenhaDialog";
-import PerfilStatsCard from "../../components/jogador/perfil/PerfilStatsCard";
-import { getMeStats, type UserStatsResponse } from "../../services/userService";
-import { tempoNoApp } from "../../utils/date";
-import { useAuth } from "../../contexts/AuthContext";
-import type { UserDTO } from "../../types/perfil";
+import ProfileHeaderCard from "../components/jogador/perfil/ProfileHeaderCard";
+import ProfileTabs from "../components/jogador/perfil/ProfileTabs";
+import ContaSection from "../components/jogador/perfil/ContaSection";
+import EditarPerfilDialog from "../components/jogador/perfil/EditarPerfilDialog";
+import AlterarSenhaDialog from "../components/jogador/perfil/AlterarSenhaDialog";
+import PerfilStatsCardJogador from "../components/jogador/perfil/PerfilStatsCardJogador";
+import {
+  getJogadorStats,
+  getLocadorStats,
+  type LocadorStatsResponse,
+  type UserStatsResponse,
+} from "../services/userService";
+import { tempoNoApp } from "../utils/date";
+import { useAuth } from "../contexts/AuthContext";
+import type { UserDTO } from "../types/perfil";
+import PerfilStatsCardLocador from "../components/locador/perfil/PerfilStatsCardLocador";
 
 type SnackState = {
   open: boolean;
@@ -33,7 +39,9 @@ export default function PerfilJogador() {
   const navigate = useNavigate();
   const { user: authUser, token, signOut, signIn, isAuthenticated } = useAuth();
 
-  const [stats, setStats] = useState<UserStatsResponse | null>(null);
+  const [stats, setStats] = useState<
+    UserStatsResponse | LocadorStatsResponse | null
+  >();
   const [tab, setTab] = useState<0 | 1>(0);
 
   const [openEdit, setOpenEdit] = useState(false);
@@ -62,21 +70,28 @@ export default function PerfilJogador() {
   }, [authUser]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       navigate("/");
       return;
     }
 
     (async () => {
       try {
-        const s = await getMeStats();
-        setStats(s);
+        if (user.tipoUsuario === "jogador") {
+          const s = await getJogadorStats();
+          setStats(s);
+        }
+
+        if (user.tipoUsuario === "locador") {
+          const s = await getLocadorStats();
+          setStats(s);
+        }
       } catch (e) {
         console.error(e);
         setStats(null);
       }
     })();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const logout = () => {
     signOut();
@@ -90,7 +105,9 @@ export default function PerfilJogador() {
 
   if (!user) {
     return (
-      <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", py: 3 }}>
+      <Box
+        sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", py: 3 }}
+      >
         <Container maxWidth="md">
           <Typography sx={{ opacity: 0.75 }}>Carregando...</Typography>
         </Container>
@@ -101,7 +118,6 @@ export default function PerfilJogador() {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", pb: 6 }}>
       <Container maxWidth="md" sx={{ pt: 2 }}>
-        {/* Top bar */}
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
           <IconButton
             onClick={() => navigate(-1)}
@@ -121,11 +137,7 @@ export default function PerfilJogador() {
 
           {tab === 0 ? (
             stats ? (
-              <PerfilStatsCard
-                totalReservas={stats.totalReservas}
-                locaisDiferentes={stats.locaisDiferentes}
-                tempoNoAppLabel={tempoNoApp(stats.createdAt)}
-              />
+              <PerfilStatsSection user={user} stats={stats} />
             ) : (
               <Typography sx={{ opacity: 0.75, mt: 1 }}>
                 Carregando estatísticas...
@@ -153,7 +165,10 @@ export default function PerfilJogador() {
         }}
       />
 
-      <AlterarSenhaDialog open={openSenha} onClose={() => setOpenSenha(false)} />
+      <AlterarSenhaDialog
+        open={openSenha}
+        onClose={() => setOpenSenha(false)}
+      />
 
       <Snackbar
         open={snack.open}
@@ -172,4 +187,37 @@ export default function PerfilJogador() {
       </Snackbar>
     </Box>
   );
+}
+
+function PerfilStatsSection({ user, stats }: { user: any; stats: any }) {
+  if (!stats) {
+    return (
+      <Typography sx={{ opacity: 0.75, mt: 1 }}>
+        Carregando estatísticas...
+      </Typography>
+    );
+  }
+
+  if (user.tipoUsuario === "jogador") {
+    return (
+      <PerfilStatsCardJogador
+        totalReservas={stats.totalReservas}
+        locaisDiferentes={stats.locaisDiferentes}
+        tempoNoAppLabel={tempoNoApp(stats.createdAt)}
+      />
+    );
+  }
+
+  if (user.tipoUsuario === "locador") {
+    return (
+      <PerfilStatsCardLocador
+        totalQuadras={stats.totalQuadras}
+        totalReservas={stats.totalReservas}
+        totalFaturamento={stats.totalFaturamento}
+        tempoNoApp={tempoNoApp(stats.createdAt)}
+      />
+    );
+  }
+
+  return null;
 }

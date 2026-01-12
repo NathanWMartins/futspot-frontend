@@ -17,8 +17,8 @@ import {
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "../contexts/AuthContext";
-import { atualizarPerfil, uploadFotoPerfil } from "../services/userService";
+import { useAuth } from "../../contexts/AuthContext";
+import { atualizarPerfil, uploadFotoPerfil } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 
 export default function EditarPerfilPage() {

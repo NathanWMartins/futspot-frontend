@@ -101,7 +101,7 @@ export default function HeaderJogador() {
                         <MenuItem
                             onClick={() => {
                                 closeMenu();
-                                navigate("/jogador/editar-perfil");
+                                navigate("/user/editar-perfil");
                             }}
                         >
                             Perfil

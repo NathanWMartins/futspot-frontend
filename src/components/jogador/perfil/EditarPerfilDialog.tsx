@@ -199,7 +199,6 @@ export default function EditarPerfilDialog({ open, onClose, user, onSaved }: Pro
             </Button>
           </Stack>
 
-          {/* NOME */}
           <TextField
             value={nome}
             onChange={(e) => setNome(e.target.value)}
@@ -215,7 +214,6 @@ export default function EditarPerfilDialog({ open, onClose, user, onSaved }: Pro
             }}
           />
 
-          {/* EMAIL */}
           <TextField
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -232,7 +230,6 @@ export default function EditarPerfilDialog({ open, onClose, user, onSaved }: Pro
             }}
           />
 
-          {/* TELEFONE */}
           <TextField
             value={telefone}
             onChange={(e) => setTelefone(e.target.value)}

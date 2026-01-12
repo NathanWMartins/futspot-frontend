@@ -112,7 +112,7 @@ function HeaderLocador() {
               <MenuItem
                 onClick={() => {
                   closeMenu();
-                  navigate("/locador/editar-perfil");
+                  navigate("/user/editar-perfil");
                 }}
               >
                 Meu perfil
