@@ -29,10 +29,28 @@ type Props = {
   }) => void;
 };
 
+const LS_KEY = "futspot:busca:filtros";
+
+type PersistedFilters = {
+  cidade: string | null;
+  tipos: Modalidade[];
+  periodos: PeriodoDia[];
+};
+
 export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
   const [cidade, setCidade] = useState<string | null>(null);
   const [cidadeInput, setCidadeInput] = useState("");
   const [cidadeOptions, setCidadeOptions] = useState<string[]>([]);
+
+  const persist = (patch: Partial<PersistedFilters>) => {
+    const next: PersistedFilters = {
+      cidade: cidade ?? null,
+      tipos,
+      periodos,
+      ...patch,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(next));
+  };
 
   const cacheRef = useRef<string[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -122,16 +140,51 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
     };
   }, [cidadeInput]);
 
+  useEffect(() => {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as Partial<PersistedFilters>;
+
+      const cidadeSaved =
+        typeof parsed.cidade === "string" ? parsed.cidade : null;
+      const tiposSaved = Array.isArray(parsed.tipos)
+        ? (parsed.tipos as Modalidade[])
+        : [];
+      const periodosSaved = Array.isArray(parsed.periodos)
+        ? (parsed.periodos as PeriodoDia[])
+        : [];
+
+      setCidade(cidadeSaved);
+      setCidadeInput(cidadeSaved ?? "");
+
+      setTipos(tiposSaved);
+      setPeriodos(periodosSaved);
+    } catch (e) {
+      console.warn("Falha ao ler filtros salvos", e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleTipo = (t: Modalidade) => {
-    setTipos((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-    );
+    setTipos((prev) => {
+      const next = prev.includes(t)
+        ? prev.filter((x) => x !== t)
+        : [...prev, t];
+      persist({ tipos: next });
+      return next;
+    });
   };
 
   const togglePeriodo = (p: PeriodoDia) => {
-    setPeriodos((prev) =>
-      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]
-    );
+    setPeriodos((prev) => {
+      const next = prev.includes(p)
+        ? prev.filter((x) => x !== p)
+        : [...prev, p];
+      persist({ periodos: next });
+      return next;
+    });
   };
 
   const handleUseMyLocation = () => {
@@ -172,6 +225,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
 
           setCidade(cidade);
           setCidadeInput(cidade);
+          persist({ cidade });
         } catch (err) {
           alert("Erro ao obter sua cidade pela localização.");
         }
@@ -226,6 +280,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                   onChange={(_, v) => {
                     setCidade(v);
                     if (v) setCidadeInput(v);
+                    persist({ cidade: v ?? null });
                   }}
                   onInputChange={(_, v, reason) => {
                     if (reason === "input") {
@@ -327,9 +382,18 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
               </Button>
               <Button
                 variant="contained"
-                onClick={() =>
-                  onSearch({ cidade, tipos, periodos, data: dataISO })
-                }
+                onClick={() => {
+                  localStorage.setItem(
+                    LS_KEY,
+                    JSON.stringify({
+                      cidade: cidade ?? null,
+                      dataISO,
+                      tipos,
+                      periodos,
+                    })
+                  );
+                  onSearch({ cidade, tipos, periodos, data: dataISO });
+                }}
                 disabled={loadingSearch}
                 sx={{
                   borderRadius: 2,
@@ -366,6 +430,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                   onChange={(_, v) => {
                     setCidade(v);
                     if (v) setCidadeInput(v);
+                    persist({ cidade: v ?? null });
                   }}
                   onInputChange={(_, v, reason) => {
                     if (reason === "input") {
@@ -410,7 +475,10 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
             <TextField
               type="date"
               value={dataISO}
-              onChange={(e) => setDataISO(e.target.value)}
+              onChange={(e) => {
+                const iso = e.target.value;
+                setDataISO(iso);
+              }}
               InputLabelProps={{ shrink: true }}
               label="Data"
               sx={{
@@ -464,9 +532,18 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
               <Button
                 fullWidth
                 variant="contained"
-                onClick={() =>
-                  onSearch({ cidade, tipos, periodos, data: dataISO })
-                }
+                onClick={() => {
+                  localStorage.setItem(
+                    LS_KEY,
+                    JSON.stringify({
+                      cidade: cidade ?? null,
+                      dataISO,
+                      tipos,
+                      periodos,
+                    })
+                  );
+                  onSearch({ cidade, tipos, periodos, data: dataISO });
+                }}
                 disabled={loadingSearch}
                 sx={{
                   borderRadius: "0 0 16px 16px",
@@ -497,6 +574,8 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
             onClick={() => {
               setAnchorLoc(null);
               setCidade(null);
+              setCidadeInput("");
+              persist({ cidade: null });
             }}
           >
             Limpar local

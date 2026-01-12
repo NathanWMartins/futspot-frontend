@@ -25,7 +25,7 @@ export default function AgendaProximosTab({
     return (
       <Card
         sx={{
-          borderRadius: 4,
+          borderRadius: 2,
           bgcolor: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.08)",
         }}

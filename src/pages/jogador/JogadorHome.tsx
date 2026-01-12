@@ -64,7 +64,7 @@ export default function HomeJogador() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
-      {/* HERO FULL WIDTH */}
+      
       <Box sx={{ position: "relative" }}>
         <Box
           sx={{

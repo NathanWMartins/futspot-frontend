@@ -29,6 +29,7 @@ import AgendaProximosTab from "../../components/jogador/agenda/AgendaProximosTab
 import AgendaHistoricoTab from "../../components/jogador/agenda/AgendaHistoricoTab";
 import AvaliarDialog from "../../components/jogador/agenda/AvaliarDialog";
 import CancelarDialog from "../../components/jogador/agenda/CancelarDialog";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 
 export default function AgendaJogador() {
   const navigate = useNavigate();
@@ -55,7 +56,6 @@ export default function AgendaJogador() {
   const showSuccess = (msg: string) =>
     setSnack({ open: true, msg, severity: "success" });
 
-  // avaliar
   const [openAvaliar, setOpenAvaliar] = useState(false);
   const [avaliando, setAvaliando] = useState(false);
   const [agSelecionado, setAgSelecionado] = useState<AgendamentoCardDTO | null>(
@@ -64,11 +64,13 @@ export default function AgendaJogador() {
   const [nota, setNota] = useState<number | null>(5);
   const [comentario, setComentario] = useState("");
 
-  // cancelar
   const [openCancelar, setOpenCancelar] = useState(false);
   const [cancelando, setCancelando] = useState(false);
   const [agParaCancelar, setAgParaCancelar] =
     useState<AgendamentoCardDTO | null>(null);
+
+  const [pullStartY, setPullStartY] = useState<number | null>(null);
+  const [isPulling, setIsPulling] = useState(false);
 
   const listaProximos = useMemo(() => agenda.proximos, [agenda]);
   const listaHistorico = useMemo(() => agenda.historico, [agenda]);
@@ -178,73 +180,110 @@ export default function AgendaJogador() {
           <Typography sx={{ fontWeight: 900, fontSize: 16 }} noWrap>
             Minha agenda
           </Typography>
-        </Stack>
 
-        {/* Segmented tabs */}
-        <Box
-          sx={{
-            borderRadius: 3,
-            border: "1px solid rgba(255,255,255,0.08)",
-            bgcolor: "rgba(255,255,255,0.03)",
-            p: 0.5,
-            mb: 2,
-          }}
-        >
-          <Tabs
-            value={aba}
-            onChange={(_, v) => setAba(v)}
-            variant="fullWidth"
-            TabIndicatorProps={{ style: { display: "none" } }}
+          <Box sx={{ flex: 1 }} />
+
+          <IconButton
+            onClick={load}
+            disabled={loading}
             sx={{
-              minHeight: 42,
-              "& .MuiTab-root": {
-                minHeight: 42,
-                borderRadius: 2.5,
-                textTransform: "none",
-                fontWeight: 900,
-                color: "rgba(255,255,255,0.75)",
-              },
-              "& .Mui-selected": {
-                bgcolor: "rgba(0,230,118,0.18)",
-                border: "1px solid rgba(0,230,118,0.30)",
-                color: "#fff",
-              },
+              color: "#00E676",
+              border: "1px solid rgba(0,230,118,0.35)",
             }}
           >
-            <Tab
-              value={0}
-              label={
-                <Stack direction="row" spacing={0.8} alignItems="center">
-                  <EventAvailableRoundedIcon fontSize="small" />
-                  <span>Próximos</span>
-                </Stack>
-              }
-            />
-            <Tab
-              value={1}
-              label={
-                <Stack direction="row" spacing={0.8} alignItems="center">
-                  <HistoryRoundedIcon fontSize="small" />
-                  <span>Histórico</span>
-                </Stack>
-              }
-            />
-          </Tabs>
-        </Box>
+            <RefreshRoundedIcon />
+          </IconButton>
+        </Stack>
 
-        {aba === 0 ? (
-          <AgendaProximosTab
-            loading={loading}
-            lista={listaProximos}
-            onCancelar={onCancelar}
-          />
-        ) : (
-          <AgendaHistoricoTab
-            loading={loading}
-            lista={listaHistorico}
-            onAvaliar={onAvaliar}
-          />
-        )}
+        <Box
+          onTouchStart={(e) => {
+            if (window.scrollY === 0) {
+              setPullStartY(e.touches[0].clientY);
+            }
+          }}
+          onTouchMove={(e) => {
+            if (pullStartY !== null) {
+              const diff = e.touches[0].clientY - pullStartY;
+              if (diff > 60) setIsPulling(true);
+            }
+          }}
+          onTouchEnd={() => {
+            if (isPulling) load();
+            setPullStartY(null);
+            setIsPulling(false);
+          }}
+        >
+          {isPulling && (
+            <Typography sx={{ textAlign: "center", opacity: 0.6, mb: 1 }}>
+              Atualizando...
+            </Typography>
+          )}
+          
+          <Box
+            sx={{
+              borderRadius: 3,
+              border: "1px solid rgba(255,255,255,0.08)",
+              bgcolor: "rgba(255,255,255,0.03)",
+              p: 0.5,
+              mb: 2,
+            }}
+          >
+            <Tabs
+              value={aba}
+              onChange={(_, v) => setAba(v)}
+              variant="fullWidth"
+              TabIndicatorProps={{ style: { display: "none" } }}
+              sx={{
+                minHeight: 42,
+                "& .MuiTab-root": {
+                  minHeight: 42,
+                  borderRadius: 2.5,
+                  textTransform: "none",
+                  fontWeight: 900,
+                  color: "rgba(255,255,255,0.75)",
+                },
+                "& .Mui-selected": {
+                  bgcolor: "rgba(0,230,118,0.18)",
+                  border: "1px solid rgba(0,230,118,0.30)",
+                  color: "#fff",
+                },
+              }}
+            >
+              <Tab
+                value={0}
+                label={
+                  <Stack direction="row" spacing={0.8} alignItems="center">
+                    <EventAvailableRoundedIcon fontSize="small" />
+                    <span>Próximos</span>
+                  </Stack>
+                }
+              />
+              <Tab
+                value={1}
+                label={
+                  <Stack direction="row" spacing={0.8} alignItems="center">
+                    <HistoryRoundedIcon fontSize="small" />
+                    <span>Histórico</span>
+                  </Stack>
+                }
+              />
+            </Tabs>
+          </Box>
+
+          {aba === 0 ? (
+            <AgendaProximosTab
+              loading={loading}
+              lista={listaProximos}
+              onCancelar={onCancelar}
+            />
+          ) : (
+            <AgendaHistoricoTab
+              loading={loading}
+              lista={listaHistorico}
+              onAvaliar={onAvaliar}
+            />
+          )}
+        </Box>
       </Container>
 
       <AvaliarDialog
