@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAuth } from "../../contexts/AuthContext";
 import FutspotLogo from "../../assets/LogoFutSpotDark.png";
 
@@ -73,9 +72,6 @@ function HeaderLocador() {
             </Typography>
           </Stack>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton color="primary">
-              <NotificationsIcon />
-            </IconButton>
             <IconButton onClick={openMenu}>
               <Avatar
                 src={user?.fotoUrl ?? undefined}

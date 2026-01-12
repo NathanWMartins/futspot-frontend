@@ -13,6 +13,7 @@ import LocalDetalheJogador from "./pages/jogador/LocalDetalheJogador";
 import AgendaJogador from "./pages/jogador/AgendaJogador";
 import Perfil from "./pages/Perfil";
 import UserLayout from "./pages/UserLayout";
+import PerfilJogador from "./pages/jogador/PerfilJogador";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="home" element={<LocadorHome />} />
             <Route path="locais" element={<LocadorLocais />} />
             <Route path="agenda" element={<AgendaLocador />} />
+            <Route path="jogador/:id" element={<PerfilJogador />} />
           </Route>
           {/* Jogador Routes */}
           <Route path="/jogador" element={<JogadorLayout />}>

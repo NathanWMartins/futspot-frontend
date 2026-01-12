@@ -10,7 +10,6 @@ import {
     Toolbar,
     Typography,
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -65,10 +64,6 @@ export default function HeaderJogador() {
                 </Stack>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <IconButton color="primary">
-                        <NotificationsIcon />
-                    </IconButton>
-
                     <IconButton onClick={openMenu}>
                         <Avatar
                             src={user?.fotoUrl ?? undefined}

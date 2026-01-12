@@ -35,7 +35,7 @@ type SnackState = {
   severity: "success" | "error" | "info";
 };
 
-export default function PerfilJogador() {
+export default function Perfil() {
   const navigate = useNavigate();
   const { user: authUser, token, signOut, signIn, isAuthenticated } = useAuth();
 
