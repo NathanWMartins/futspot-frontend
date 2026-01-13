@@ -1,4 +1,4 @@
-import { Alert, Box, Container, Snackbar } from "@mui/material";
+import { Alert, Box, Container, Snackbar, useMediaQuery, useTheme } from "@mui/material";
 import HeroJogador from "../../components/jogador/HeroJogador";
 import SearchPanelJogador from "../../components/jogador/SearchPanelJogador";
 import type { PeriodoDia, Modalidade, LocalCardDTO } from "../../types/local";
@@ -8,6 +8,8 @@ import { searchLocais } from "../../services/locaisService";
 
 export default function HomeJogador() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: "info" | "error" }>({
     open: false,
@@ -68,6 +70,7 @@ export default function HomeJogador() {
         <Box
           sx={{
             width: "100%",
+            pl: !isMobile ? 10: 0,
             height: { xs: 260, sm: 260, md: 280 },
             overflow: "hidden",
             borderBottomLeftRadius: { xs: 10, md: 0 },

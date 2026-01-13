@@ -69,7 +69,6 @@ export async function criarLocal(payload: LocalPayload): Promise<Local> {
 }
 
 export async function atualizarLocal(id: number, payload: LocalPayload): Promise<Local> {
-    console.log("payload update:", payload);
     const { data } = await api.put<Local>(`/locais/${id}`, payload);
     return data;
 }

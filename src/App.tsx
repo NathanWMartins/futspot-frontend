@@ -21,7 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/user" element={<UserLayout />}>
-          <Route path="editar-perfil" element={<Perfil />} />
+          <Route path="perfil" element={<Perfil />} />
         </Route>
         <Route element={<RequireAuth />}>
           {/* Locador Routes */}

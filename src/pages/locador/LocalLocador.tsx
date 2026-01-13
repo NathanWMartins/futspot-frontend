@@ -290,7 +290,7 @@ function LocadorLocais() {
               sx={{ mb: 1 }}
             >
               <Box>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography variant="h6" fontWeight={700} fontFamily={"'Poppins', sans-serif"}>
                   Meus locais
                 </Typography>
                 <Typography sx={{ fontSize: 14, opacity: 0.7 }}>
@@ -329,7 +329,9 @@ function LocadorLocais() {
                     borderRadius: 10,
                     px: 3,
                     boxShadow: "0 0 16px rgba(0, 230, 118, 0.6)",
+                    fontFamily: "'Poppins', sans-serif",
                   }}
+                  
                   onClick={openCreate}
                 >
                   Cadastrar novo local

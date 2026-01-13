@@ -68,7 +68,6 @@ export default function LocadorHome() {
   const [ocupacaoByLocalId, setOcupacaoByLocalId] = useState<
     Record<number, OcupacaoItem>
   >({});
-  const [loadingOcupacao, setLoadingOcupacao] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -133,7 +132,6 @@ export default function LocadorHome() {
       const dataLocais = await listarMeusLocais();
       setLocais(dataLocais);
 
-      setLoadingOcupacao(true);
       const dataISO = todayISO();
       const ocupacaoResp = await getOcupacaoDoDia(dataISO);
 
@@ -150,7 +148,6 @@ export default function LocadorHome() {
       setOcupacaoByLocalId({});
     } finally {
       setLoading(false);
-      setLoadingOcupacao(false);
     }
   }
 
@@ -234,15 +231,12 @@ export default function LocadorHome() {
         >
           <Box>
             <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography variant="h5" fontWeight={700} fontFamily={"'Poppins', sans-serif"}>
                 Olá, {firstName ?? "Locador"}!
               </Typography>
 
               <WavingHandIcon sx={{ color: "primary.main", fontSize: 30 }} />
             </Stack>
-            <Typography sx={{ opacity: 0.7, mt: 0.5 }}>
-              Gerencie seus locais e acompanhe sua agenda em um só lugar.
-            </Typography>
           </Box>
 
           {loading && (
@@ -362,7 +356,7 @@ export default function LocadorHome() {
                 alignItems="center"
                 mb={2}
               >
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} fontFamily={"'Poppins', sans-serif"}>
                   Meus locais
                 </Typography>
               </Stack>

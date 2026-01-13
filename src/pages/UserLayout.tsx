@@ -1,10 +1,10 @@
 import { Box, useMediaQuery } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { Outlet } from "react-router-dom";
-import HeaderJogador from "../components/jogador/HeaderJogador";
-import HeaderLocador from "../components/locador/HeaderLocador";
 import BottomNavJogador from "../components/jogador/BottomNavJogador";
 import BottomNavLocador from "../components/locador/BottomNavLocador";
+import { Sidebar } from "../components/sidebar/Sidebar";
+import { jogadorMenu, locadorMenu } from "../components/sidebar/menus";
 
 export default function UserLayout() {
   const { user } = useAuth();
@@ -14,8 +14,26 @@ export default function UserLayout() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
-      {!isMobile && user.tipoUsuario === "jogador" && <HeaderJogador />}
-      {!isMobile && user.tipoUsuario === "locador" && <HeaderLocador />}
+      {!isMobile && user.tipoUsuario === "jogador" && (
+        <Sidebar
+          menu={jogadorMenu}
+          user={{
+            nome: user?.nome ?? "User",
+            fotoUrl: user?.fotoUrl ?? "",
+            tipoUsuario: user?.tipoUsuario ?? "",
+          }}
+        />
+      )}
+      {!isMobile && user.tipoUsuario === "locador" && (
+        <Sidebar
+          menu={locadorMenu}
+          user={{
+            nome: user?.nome ?? "User",
+            fotoUrl: user?.fotoUrl ?? "",
+            tipoUsuario: user?.tipoUsuario ?? "",
+          }}
+        />
+      )}
 
       <Box sx={{ pb: isMobile ? 8 : 0 }}>
         <Outlet />

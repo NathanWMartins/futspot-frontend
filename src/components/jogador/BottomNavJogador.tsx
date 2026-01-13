@@ -10,7 +10,7 @@ const items = [
     { label: "Agenda", value: "/jogador/agenda", icon: <EventOutlinedIcon /> },
 ];
 
-const PROFILE_PATH = "/user/editar-perfil";
+const PROFILE_PATH = "/user/perfil";
 
 export default function BottomNavJogador() {
     const navigate = useNavigate();

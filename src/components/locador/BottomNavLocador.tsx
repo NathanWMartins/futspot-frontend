@@ -12,7 +12,7 @@ const items = [
     { label: "Agenda", value: "/locador/agenda", icon: <EventOutlinedIcon /> },
 ];
 
-const PROFILE_PATH = "/user/editar-perfil";
+const PROFILE_PATH = "/user/perfil";
 
 export default function BottomNavLocador() {
     const navigate = useNavigate();

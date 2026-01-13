@@ -132,7 +132,7 @@ export default function LocadorAgenda() {
 
   return (
     <>
-      <Box sx={{ px: { xs: 1.5, sm: 3 }, py: 3 }}>
+      <Box sx={{ px: { xs: 1.5, sm: 15 }, py: 3 }}>
         <Stack spacing={2}>
           <Box>
             <Typography sx={{ fontSize: 18, fontWeight: 900 }}>
@@ -186,7 +186,12 @@ export default function LocadorAgenda() {
                   <Button
                     variant="outlined"
                     onClick={() => setDate((d) => addDays(d, -1))}
-                    sx={{ minWidth: 44, px: 1 }}
+                    sx={{
+                      minWidth: 44,
+                      px: 1,
+                      color: "#ffffff8c",
+                      borderColor: "#ffffff8c",
+                    }}
                   >
                     <ChevronLeftRoundedIcon />
                   </Button>
@@ -195,7 +200,12 @@ export default function LocadorAgenda() {
                     variant="outlined"
                     startIcon={<TodayRoundedIcon />}
                     onClick={() => setDate(new Date())}
-                    sx={{ textTransform: "none" }}
+                    sx={{
+                      textTransform: "none",
+                      color: "#ffffff",
+                      borderColor: "#ffffff8c",
+                    }}
+                    color="inherit"
                   >
                     {dateLabel}
                   </Button>
@@ -203,7 +213,12 @@ export default function LocadorAgenda() {
                   <Button
                     variant="outlined"
                     onClick={() => setDate((d) => addDays(d, 1))}
-                    sx={{ minWidth: 44, px: 1 }}
+                    sx={{
+                      minWidth: 44,
+                      px: 1,
+                      color: "#ffffff8c",
+                      borderColor: "#ffffff8c",
+                    }}
                   >
                     <ChevronRightRoundedIcon />
                   </Button>
