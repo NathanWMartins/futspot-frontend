@@ -153,21 +153,20 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
                   borderRadius: 3,
                   border: "1px solid rgba(255,255,255,0.08)",
                   background: "rgba(255,255,255,0.02)",
-                  p: 2,
+                  p: 2,cursor: "pointer", "&:hover": {bgcolor: "#343434"}
                 }}
+                  onClick={() => {
+                    if (slot.jogador?.id) {
+                      navigate(`/locador/jogador/${slot.jogador.id}`);
+                    }
+                  }}
               >
                 <Typography sx={{ fontWeight: 900, mb: 1 }}>Jogador</Typography>
 
                 <Stack
                   direction="row"
                   spacing={1.5}
-                  alignItems="center"
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => {
-                    if (slot.jogador?.id) {
-                      navigate(`/locador/jogador/${slot.jogador.id}`);
-                    }
-                  }}
+                  alignItems="center"                  
                 >
                   <Avatar
                     sx={{ bgcolor: "rgba(0,230,118,0.20)", color: "#00E676" }}
