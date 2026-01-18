@@ -17,6 +17,9 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import StarIcon from "@mui/icons-material/Star";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import IconButton from "@mui/material/IconButton";
 
 export default function PerfilJogador() {
   const { id } = useParams();
@@ -25,6 +28,7 @@ export default function PerfilJogador() {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   const nivelExperiencia =
     dados &&
@@ -42,10 +46,39 @@ export default function PerfilJogador() {
     load();
   }, [id]);
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={42} />
+      </Box>
+    );
+  }
 
   return (
     <Box p={3} sx={{ ml: !isMobile ? 10 : 0, mr: !isMobile ? 10 : 0 }}>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+        <IconButton
+          onClick={() => navigate(-1)}
+          sx={{
+            bgcolor: "rgba(255,255,255,0.06)",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.12)" },
+          }}
+        >
+          <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+
+        <Typography sx={{ fontWeight: 800, fontSize: 16 }}>
+          Perfil do jogador
+        </Typography>
+      </Stack>
+
       <Stack
         direction="row"
         spacing={1}
@@ -93,7 +126,7 @@ export default function PerfilJogador() {
           label="Avaliações feitas"
           value={
             dados.mediaAvaliacoes === null ? (
-              "Ainda não avaliou locais"
+              "Ainda não avaliou"
             ) : (
               <Stack direction="row" spacing={0.5} alignItems="center">
                 <Typography sx={{ fontWeight: 700 }}>
@@ -102,7 +135,7 @@ export default function PerfilJogador() {
 
                 <StarIcon sx={{ fontSize: 16, color: "#fff", opacity: 0.8 }} />
 
-                <Typography sx={{ fontSize: 12,opacity: 0.7 }}>
+                <Typography sx={{ fontSize: 12, opacity: 0.7 }}>
                   {"(" + dados.totalAvaliacoes}{" "}
                   {dados.totalAvaliacoes === 1 ? "avaliação)" : "avaliações)"}
                 </Typography>
@@ -156,7 +189,7 @@ export default function PerfilJogador() {
 
 function calcularNivelExperiencia(
   totalAgendamentos: number,
-  taxaCancelamento: number
+  taxaCancelamento: number,
 ) {
   if (totalAgendamentos < 5) {
     return "Iniciante";

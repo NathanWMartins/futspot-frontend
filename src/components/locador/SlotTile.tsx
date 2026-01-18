@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { chipLivre, chipOcupado } from "../../utils/ChipsInfoAgendamento";
+import { chipLivre, chipOcupado, chipSolicitado } from "../../utils/ChipsInfoAgendamento";
 
 export function SlotTile({
   inicio,
@@ -7,10 +7,11 @@ export function SlotTile({
   onSelect,
 }: {
   inicio: string;
-  status: "livre" | "ocupado";
+  status: "livre" | "ocupado" | "solicitado";
   onSelect: () => void;
 }) {
   const isLivre = status === "livre";
+  const isSolicitado = status === "solicitado";
 
   return (
     <Box
@@ -36,7 +37,7 @@ export function SlotTile({
           bottom: 0,
           width: 4,
           borderRadius: "4px 0 0 4px",
-          bgcolor: isLivre ? "#00E676" : "#ff5252",
+          bgcolor: isLivre ? "#00E676" : isSolicitado ? "#ffbb00" : "#ff5252",
           opacity: 0.9,
         },
       }}
@@ -44,7 +45,7 @@ export function SlotTile({
       <Stack spacing={0.8} alignItems="center">
         <Typography sx={{ fontWeight: 800, fontSize: 15 }}>{inicio}</Typography>
 
-        {isLivre ? chipLivre() : chipOcupado()}
+        {isLivre ? chipLivre() : isSolicitado ? chipSolicitado() : chipOcupado()}
       </Stack>
     </Box>
   );

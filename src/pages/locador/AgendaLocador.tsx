@@ -26,7 +26,11 @@ import type {
   SlotInfo,
 } from "../../components/locador/DialogInfoAgendamento";
 import SlotInfoDialog from "../../components/locador/DialogInfoAgendamento";
-import { chipLivre, chipOcupado } from "../../utils/ChipsInfoAgendamento";
+import {
+  chipLivre,
+  chipOcupado,
+  chipSolicitado,
+} from "../../utils/ChipsInfoAgendamento";
 
 type DisponibilidadeResponse = {
   fechado: boolean;
@@ -67,7 +71,7 @@ export default function LocadorAgenda() {
 
   const selectedLocal = useMemo(
     () => locais.find((l) => l.id === localId) ?? null,
-    [locais, localId]
+    [locais, localId],
   );
 
   const dateLabel = useMemo(() => formatDateLabel(date), [date]);
@@ -114,7 +118,7 @@ export default function LocadorAgenda() {
 
         const { data } = await api.get<DisponibilidadeResponse>(
           `/locais/${localId}/disponibilidade`,
-          { params: { data: yyyyMMdd } }
+          { params: { data: yyyyMMdd } },
         );
 
         setFechado(!!data?.fechado);
@@ -128,7 +132,7 @@ export default function LocadorAgenda() {
         setLoadingAgenda(false);
       }
     })();
-  }, [localId, date]);
+  }, [localId, date]);  
 
   return (
     <>
@@ -181,7 +185,7 @@ export default function LocadorAgenda() {
                   direction="row"
                   spacing={1}
                   alignItems="center"
-                  justifyContent="flex-end"
+                  justifyContent={isMobile ? "center" : "flex-end"}
                 >
                   <Button
                     variant="outlined"
@@ -236,10 +240,6 @@ export default function LocadorAgenda() {
                 <Typography sx={{ fontSize: 13, opacity: 0.75 }}>
                   {selectedLocal ? selectedLocal.endereco : "—"}
                 </Typography>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  {chipLivre()}
-                  {chipOcupado()}
-                </Stack>
               </Stack>
             </CardContent>
           </Card>
@@ -308,7 +308,11 @@ export default function LocadorAgenda() {
                             {s.inicio} – {s.fim}
                           </Typography>
 
-                          {s.status === "livre" ? chipLivre() : chipOcupado()}
+                          {s.status === "livre"
+                            ? chipLivre()
+                            : s.status === "solicitado"
+                              ? chipSolicitado()
+                              : chipOcupado()}
                         </Box>
                       ))}
                     </Stack>

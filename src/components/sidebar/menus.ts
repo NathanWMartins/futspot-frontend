@@ -1,6 +1,6 @@
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import type { SvgIconComponent } from "@mui/icons-material";
 
 export interface MenuItem {
@@ -16,6 +16,6 @@ export const jogadorMenu: MenuItem[] = [
 
 export const locadorMenu: MenuItem[] = [
   { label: "Início", path: "/locador/home", icon: HomeIcon, },
-  { label: "Locais", path: "/locador/locais", icon: SportsSoccerIcon, },
+  { label: "Locais", path: "/locador/locais", icon: PlaceOutlinedIcon, },
   { label: "Agenda", path: "/locador/agenda", icon: CalendarMonthIcon, },
 ];

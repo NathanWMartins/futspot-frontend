@@ -72,7 +72,6 @@ export default function ResultadosJogador() {
 
   const { filtros, locais } = state;
 
-  // --- range de preço com base na lista ---
   const precos = locais
     .map((l) => l.precoHora ?? 0)
     .filter((v) => Number.isFinite(v) && v > 0);
@@ -80,7 +79,6 @@ export default function ResultadosJogador() {
   const minPreco = precos.length ? Math.min(...precos) : 0;
   const maxPreco = precos.length ? Math.max(...precos) : 500;
 
-  // estados "aplicados"
   const [faixaPreco, setFaixaPreco] = React.useState<number[]>([
     minPreco,
     maxPreco,
@@ -88,7 +86,6 @@ export default function ResultadosJogador() {
   const [tiposSel, setTiposSel] = React.useState<Modalidade[]>([]);
   const [periodosSel, setPeriodosSel] = React.useState<PeriodoDia[]>([]);
 
-  // estados "em edição" (dentro do drawer) – evita mudar lista enquanto mexe no filtro
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [tmpFaixa, setTmpFaixa] = React.useState<number[]>([
     minPreco,
@@ -98,7 +95,6 @@ export default function ResultadosJogador() {
   const [tmpPeriodos, setTmpPeriodos] = React.useState<PeriodoDia[]>([]);
 
   React.useEffect(() => {
-    // quando muda a lista, rebaseia o preço
     setFaixaPreco([minPreco, maxPreco]);
     setTmpFaixa([minPreco, maxPreco]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,16 +127,13 @@ export default function ResultadosJogador() {
     if (tiposSel.length && l.tipoLocal && !tiposSel.includes(l.tipoLocal))
       return false;
 
-    // período: por enquanto não temos disponibilidade real no payload, então não filtra
-    // quando você tiver disponibilidade, aqui você aplica de verdade.
     return true;
   });
 
-  //formatar data para BR
   const dataParts = filtros.data.split("-");
   const dataFormatada =
     dataParts.length === 3
-      ? `${dataParts[2]}-${dataParts[1]}-${dataParts[0]}`
+      ? `${dataParts[2]}/${dataParts[1]}/${dataParts[0]}`
       : filtros.data;
 
   const resumoLinha1 = `${filtros.cidade ?? "Cidade"} • ${dataFormatada}`;

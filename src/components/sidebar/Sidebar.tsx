@@ -29,12 +29,10 @@ export function Sidebar({ menu, user }: SidebarProps) {
         top: 0,
         height: "100vh",
         width: open ? 220 : 72,
-        bgcolor: open
-      ? "rgba(18,18,18,0.78)"
-      : "#121212",
-    backdropFilter: open ? "blur(8px)" : "none",
-    borderRight: "1px solid rgba(255,255,255,0.08)",
-    transition: `
+        bgcolor: open ? "rgba(18,18,18,0.78)" : "#121212",
+        backdropFilter: open ? "blur(8px)" : "none",
+        borderRight: "1px solid rgba(255,255,255,0.08)",
+        transition: `
       width 260ms cubic-bezier(0.4, 0, 0.2, 1),
       background-color 200ms ease,
       backdrop-filter 200ms ease

@@ -19,7 +19,8 @@ import { useState } from "react";
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
-export type SlotStatus = "livre" | "ocupado";
+export type SlotStatus = "livre" | "ocupado" | "solicitado";
+type ConfirmAction = "cancelar" | "aceitar" | "recusar";
 
 export type SlotInfo = {
   inicio: string;
@@ -52,13 +53,26 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
   if (!slot) return null;
 
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null,
+  );
   const navigate = useNavigate();
 
   const foto = local?.fotos?.[0] ?? "";
   const hasFoto = Boolean(foto);
 
-  const onCancelar = () => {
-    api.delete(`/agendamentos/${slot.agendamentoId}`);
+  const onCancelar = async () => {
+    await api.delete(`/agendamentos/${slot.agendamentoId}`);
+    onClose();
+  };
+
+  const onAceitar = async () => {
+    await api.patch(`/agendamentos/${slot.agendamentoId}/confirmar`);
+    onClose();
+  };
+
+  const onRecusar = async () => {
+    await api.patch(`/agendamentos/${slot.agendamentoId}/recusar`);
     onClose();
   };
 
@@ -143,37 +157,54 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
                 {slot.inicio} – {slot.fim}
               </Typography>
               <Typography sx={{ fontSize: 13, opacity: 0.75 }}>
-                Status: {slot.status === "livre" ? "Livre" : "Ocupado"}
+                Status:{" "}
+                {slot.status === "livre"
+                  ? "Livre"
+                  : slot.status === "solicitado"
+                    ? "Solicitado"
+                    : "Ocupado"}
               </Typography>
             </Box>
 
-            {slot.status === "ocupado" ? (
+            {slot.status === "livre" ? (
+              <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
+                Este horário está livre.
+              </Typography>
+            ) : (
               <Box
                 sx={{
                   borderRadius: 3,
                   border: "1px solid rgba(255,255,255,0.08)",
-                  background: "rgba(255,255,255,0.02)",
-                  p: 2,cursor: "pointer", "&:hover": {bgcolor: "#343434"}
+                  background:
+                    slot.status === "solicitado"
+                      ? "rgba(255,193,7,0.08)"
+                      : "rgba(255,255,255,0.02)",
+                  p: 2,
+                  cursor: "pointer",
+                  "&:hover":
+                    slot.status === "ocupado"
+                      ? { bgcolor: "#343434" }
+                      : undefined,
                 }}
-                  onClick={() => {
-                    if (slot.jogador?.id) {
-                      navigate(`/locador/jogador/${slot.jogador.id}`);
-                    }
-                  }}
+                onClick={() => {
+                  if (slot.jogador) {
+                    navigate(`/locador/jogador/${slot.jogador.id}`);
+                  }
+                }}
               >
-                <Typography sx={{ fontWeight: 900, mb: 1 }}>Jogador</Typography>
+                <Typography sx={{ fontWeight: 900, mb: 1 }}>
+                  {slot.status === "solicitado"
+                    ? "Solicitação de agendamento"
+                    : "Jogador"}
+                </Typography>
 
-                <Stack
-                  direction="row"
-                  spacing={1.5}
-                  alignItems="center"                  
-                >
+                <Stack direction="row" spacing={1.5} alignItems="center">
                   <Avatar
                     sx={{ bgcolor: "rgba(0,230,118,0.20)", color: "#00E676" }}
                   >
-                    {slot.jogador?.fotoUrl != null ? (
+                    {slot.jogador?.fotoUrl ? (
                       <Avatar
-                        src={slot.jogador?.fotoUrl ?? undefined}
+                        src={slot.jogador.fotoUrl}
                         sx={{
                           width: 26,
                           height: 26,
@@ -197,26 +228,58 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
                   </Box>
                 </Stack>
               </Box>
-            ) : (
-              <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                Este horário está livre.
-              </Typography>
             )}
           </Stack>
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          {slot.status === "ocupado" ? (
+          {slot.status === "ocupado" && (
             <Button
               variant="outlined"
               color="error"
               startIcon={<CancelIcon />}
-              onClick={() => setConfirmOpen(true)}
+              onClick={() => {
+                setConfirmAction("cancelar");
+                setConfirmOpen(true);
+              }}
             >
               Cancelar
             </Button>
-          ) : null}
-          <Button onClick={onClose} variant="outlined">
+          )}
+
+          {slot.status === "solicitado" && (
+            <>
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ fontFamily: "'Poppins', sans-serif" }}
+                onClick={() => {
+                  setConfirmAction("recusar");
+                  setConfirmOpen(true);
+                }}
+              >
+                Recusar
+              </Button>
+
+              <Button
+                variant="contained"
+                color="success"
+                sx={{ color: "#fff", fontFamily: "'Poppins', sans-serif" }}
+                onClick={() => {
+                  setConfirmAction("aceitar");
+                  setConfirmOpen(true);
+                }}
+              >
+                Aceitar
+              </Button>
+            </>
+          )}
+
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            sx={{ fontFamily: "'Poppins', sans-serif" }}
+          >
             Fechar
           </Button>
         </DialogActions>
@@ -228,12 +291,26 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
         maxWidth="xs"
         fullWidth
       >
-        <DialogTitle sx={{ fontWeight: 900 }}>Cancelar agendamento</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 900 }}>
+          {confirmAction === "aceitar"
+            ? "Aceitar solicitação"
+            : confirmAction === "recusar"
+              ? "Recusar solicitação"
+              : "Cancelar agendamento"}
+        </DialogTitle>
 
         <DialogContent>
           <Typography>
-            Tem certeza que deseja cancelar este agendamento?
+            {confirmAction === "aceitar" &&
+              "Deseja confirmar este agendamento?"}
+
+            {confirmAction === "recusar" &&
+              "Deseja recusar esta solicitação de agendamento?"}
+
+            {confirmAction === "cancelar" &&
+              "Tem certeza que deseja cancelar este agendamento?"}
           </Typography>
+
           <Typography sx={{ fontSize: 13, opacity: 0.7, mt: 1 }}>
             Esta ação não pode ser desfeita.
           </Typography>
@@ -242,11 +319,14 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>Voltar</Button>
           <Button
-            color="error"
             variant="contained"
-            onClick={() => {
+            color={confirmAction === "aceitar" ? "success" : "error"}
+            onClick={async () => {
               setConfirmOpen(false);
-              onCancelar();
+
+              if (confirmAction === "aceitar") await onAceitar();
+              if (confirmAction === "recusar") await onRecusar();
+              if (confirmAction === "cancelar") await onCancelar();
             }}
           >
             Confirmar

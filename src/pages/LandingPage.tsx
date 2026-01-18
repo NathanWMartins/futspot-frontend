@@ -80,7 +80,11 @@ export const LandingPage: React.FC = () => {
             </Typography>
           </Stack>
 
-          <Button color="inherit" onClick={handleOpenAuth}>
+          <Button
+            color="inherit"
+            onClick={handleOpenAuth}
+            sx={{ fontFamily: "'Poppins', sans-serif" }}
+          >
             Entrar
           </Button>
         </Toolbar>
@@ -92,16 +96,14 @@ export const LandingPage: React.FC = () => {
           display: "flex",
           alignItems: "center",
           bgcolor: "background.default",
-          py: 4,
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Stack
             direction={{ xs: "column", md: "row" }}
             spacing={6}
             alignItems="center"
           >
-            {/* Texto principal */}
             <Box flex={1}>
               {!isMobile ? (
                 <Chip
@@ -137,6 +139,7 @@ export const LandingPage: React.FC = () => {
                     variant="contained"
                     size="large"
                     onClick={handleOpenAuth}
+                    sx={{ fontFamily: "'Poppins', sans-serif", color: "#fff" }}
                   >
                     Começar agora
                   </Button>

@@ -1,4 +1,11 @@
-import { Alert, Box, Container, Snackbar, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Container,
+  Snackbar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import HeroJogador from "../../components/jogador/HeroJogador";
 import SearchPanelJogador from "../../components/jogador/SearchPanelJogador";
 import type { PeriodoDia, Modalidade, LocalCardDTO } from "../../types/local";
@@ -11,7 +18,11 @@ export default function HomeJogador() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: "info" | "error" }>({
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    msg: string;
+    severity: "info" | "error";
+  }>({
     open: false,
     msg: "",
     severity: "info",
@@ -26,11 +37,19 @@ export default function HomeJogador() {
     data: string;
   }) => {
     if (!filters.cidade) {
-      setSnack({ open: true, msg: "Selecione uma cidade para buscar.", severity: "info" });
+      setSnack({
+        open: true,
+        msg: "Selecione uma cidade para buscar.",
+        severity: "info",
+      });
       return;
     }
     if (!filters.data) {
-      setSnack({ open: true, msg: "Selecione uma data para buscar.", severity: "info" });
+      setSnack({
+        open: true,
+        msg: "Selecione uma data para buscar.",
+        severity: "info",
+      });
       return;
     }
 
@@ -38,7 +57,6 @@ export default function HomeJogador() {
       setLoadingSearch(true);
 
       const locais: LocalCardDTO[] = await searchLocais(filters);
-
 
       if (!locais.length) {
         setSnack({
@@ -52,10 +70,15 @@ export default function HomeJogador() {
       navigate("/jogador/resultados", {
         state: { filtros: filters, locais },
       });
-    } catch (e) {
+    } catch (e: any) {
+      const errorMessage =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Erro ao buscar locais. Tente novamente.";
+
       setSnack({
         open: true,
-        msg: "Erro ao buscar locais. Tente novamente.",
+        msg: errorMessage,
         severity: "error",
       });
     } finally {
@@ -65,12 +88,11 @@ export default function HomeJogador() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
-      
       <Box sx={{ position: "relative" }}>
         <Box
           sx={{
             width: "100%",
-            pl: !isMobile ? 10: 0,
+            pl: !isMobile ? 10 : 0,
             height: { xs: 260, sm: 260, md: 280 },
             overflow: "hidden",
             borderBottomLeftRadius: { xs: 10, md: 0 },
@@ -94,7 +116,10 @@ export default function HomeJogador() {
             mt: { xs: -5, sm: -8, md: 0 },
           }}
         >
-          <SearchPanelJogador onSearch={handleSearch} loadingSearch={loadingSearch}/>
+          <SearchPanelJogador
+            onSearch={handleSearch}
+            loadingSearch={loadingSearch}
+          />
         </Container>
       </Box>
       <Snackbar

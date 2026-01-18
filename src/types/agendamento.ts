@@ -1,4 +1,4 @@
-export type StatusAgendamento = "confirmado" | "cancelado";
+export type StatusAgendamento = "confirmado" | "cancelado" | "solicitado";
 
 export type AvaliacaoDTO = {
     id: number;

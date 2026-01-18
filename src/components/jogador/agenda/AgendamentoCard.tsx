@@ -34,6 +34,36 @@ export default function AgendamentoCard({
   onAvaliar,
 }: Props) {
   const isConfirmado = ag.status === "confirmado";
+  const isSolicitado = ag.status === "solicitado";
+  const isCancelado = ag.status === "cancelado";
+
+  const getStatusLabel = () => {
+    if (isConfirmado) return "Confirmado";
+    if (isSolicitado) return "Solicitado";
+    if (isCancelado) return "Cancelado";
+    return "—";
+  };
+
+  const getStatusStyle = () => {
+    if (isConfirmado) {
+      return {
+        bgcolor: "rgba(0,230,118,0.18)",
+        border: "1px solid rgba(0,230,118,0.35)",
+      };
+    }
+
+    if (isSolicitado) {
+      return {
+        bgcolor: "rgba(255,193,7,0.18)",
+        border: "1px solid rgba(255,193,7,0.45)",
+      };
+    }
+
+    return {
+      bgcolor: "rgba(255,255,255,0.10)",
+      border: "1px solid rgba(255,255,255,0.15)",
+    };
+  };
 
   return (
     <Card
@@ -97,17 +127,12 @@ export default function AgendamentoCard({
                   {variant === "proximos" ? (
                     <Chip
                       size="small"
-                      label={isConfirmado ? "Confirmado" : "Cancelado"}
+                      label={getStatusLabel()}
                       sx={{
-                        bgcolor: isConfirmado
-                          ? "rgba(0,230,118,0.18)"
-                          : "rgba(255,255,255,0.10)",
-                        border: isConfirmado
-                          ? "1px solid rgba(0,230,118,0.35)"
-                          : "1px solid rgba(255,255,255,0.15)",
                         color: "#fff",
                         fontWeight: 900,
                         height: 24,
+                        ...getStatusStyle(),
                       }}
                     />
                   ) : null}
@@ -150,7 +175,7 @@ export default function AgendamentoCard({
                           {ag.avaliacao.nota.toFixed(1)}
                         </Typography>
                       </Stack>
-                    ) : ag.status !== "confirmado" ? (
+                    ) : isCancelado ? (
                       <Stack direction="row">
                         <DoNotDisturbIcon
                           fontSize="small"
@@ -332,17 +357,12 @@ export default function AgendamentoCard({
                 {variant === "proximos" ? (
                   <Chip
                     size="small"
-                    label={isConfirmado ? "Confirmado" : "Cancelado"}
+                    label={getStatusLabel()}
                     sx={{
-                      bgcolor: isConfirmado
-                        ? "rgba(0,230,118,0.18)"
-                        : "rgba(255,255,255,0.10)",
-                      border: isConfirmado
-                        ? "1px solid rgba(0,230,118,0.35)"
-                        : "1px solid rgba(255,255,255,0.15)",
                       color: "#fff",
                       fontWeight: 900,
                       height: 24,
+                      ...getStatusStyle(),
                     }}
                   />
                 ) : null}
@@ -355,10 +375,9 @@ export default function AgendamentoCard({
                     }}
                     sx={{
                       color: "error.main",
-                      p: 0.45,
+                      p: 0.35,
                       "&:hover": { color: "#fe5353ff" },
                     }}
-                    aria-label="Cancelar agendamento"
                   >
                     <CancelIcon fontSize="small" />
                   </IconButton>
@@ -384,7 +403,7 @@ export default function AgendamentoCard({
                         {ag.avaliacao.nota.toFixed(1)}
                       </Typography>
                     </Stack>
-                  ) : ag.status !== "confirmado" ? (
+                  ) : isCancelado ? (
                     <Stack direction="row">
                       <DoNotDisturbIcon
                         fontSize="small"

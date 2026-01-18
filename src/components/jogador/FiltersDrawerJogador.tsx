@@ -47,10 +47,10 @@ export default function FiltersDrawerJogador({
   setTmpFaixa,
   tmpTipos,
   setTmpTipos,
-  tmpPeriodos,
-  setTmpPeriodos,
+  // tmpPeriodos,
+  // setTmpPeriodos,
   labelTipo,
-  labelPeriodo,
+  // labelPeriodo,
   onClear,
   onApply,
   anchor = "bottom",
@@ -151,7 +151,7 @@ export default function FiltersDrawerJogador({
           <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
 
           {/* período */}
-          <Box>
+          {/* <Box>
             <Typography fontWeight={800} sx={{ mb: 1 }}>
               Período
             </Typography>
@@ -182,7 +182,7 @@ export default function FiltersDrawerJogador({
                 );
               })}
             </Stack>
-          </Box>
+          </Box> */}
 
           {/* ações */}
           <Stack direction="row" spacing={1.5} sx={{ pt: 1 }}>
