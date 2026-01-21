@@ -87,7 +87,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://servicodados.ibge.gov.br/api/v1/localidades/municipios"
+        "https://servicodados.ibge.gov.br/api/v1/localidades/municipios",
       );
       if (!res.ok) throw new Error("IBGE error");
       const data: Array<{ id: number; nome: string }> = await res.json();
@@ -201,7 +201,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
           const { latitude, longitude } = pos.coords;
 
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
           );
 
           if (!res.ok) {
@@ -232,9 +232,9 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
       },
       () => {
         alert(
-          "Não foi possível obter sua localização. Verifique as permissões."
+          "Não foi possível obter sua localização. Verifique as permissões.",
         );
-      }
+      },
     );
   };
 
@@ -273,6 +273,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Box sx={{ flex: 2 }}>
                 <Autocomplete
+                  data-cy="search-cidade"
                   options={cidadeOptions}
                   loading={loading}
                   value={cidade}
@@ -293,7 +294,14 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                       : "Nenhuma cidade encontrada"
                   }
                   renderInput={(params) => (
-                    <TextField {...params} placeholder="Local (cidade)" />
+                    <TextField
+                      {...params}
+                      placeholder="Local (cidade)"
+                      inputProps={{
+                        ...params.inputProps,
+                        "data-cy": "input-cidade",
+                      }}
+                    />
                   )}
                 />
               </Box>
@@ -318,6 +326,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                 <TextField
                   placeholder="Data (dd/mm/aaaa)"
                   value={dataText}
+                  inputProps={{ "data-cy": "input-data" }}
                   onChange={(e) => {
                     const raw = e.target.value;
                     const digits = raw.replace(/\D/g, "").slice(0, 8);
@@ -330,7 +339,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                     } else {
                       formatted = `${digits.slice(0, 2)}/${digits.slice(
                         2,
-                        4
+                        4,
                       )}/${digits.slice(4)}`;
                     }
 
@@ -382,6 +391,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
               </Button>
               <Button
                 variant="contained"
+                data-cy="btn-procurar"
                 onClick={() => {
                   localStorage.setItem(
                     LS_KEY,
@@ -390,7 +400,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                       dataISO,
                       tipos,
                       periodos,
-                    })
+                    }),
                   );
                   onSearch({ cidade, tipos, periodos, data: dataISO });
                 }}
@@ -423,6 +433,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
             >
               <Box sx={{ flex: 1 }}>
                 <Autocomplete
+                  data-cy="search-cidade"
                   options={cidadeOptions}
                   loading={loading}
                   value={cidade}
@@ -443,7 +454,14 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                       : "Nenhuma cidade encontrada"
                   }
                   renderInput={(params) => (
-                    <TextField {...params} placeholder="Local (cidade)" />
+                    <TextField
+                      {...params}
+                      placeholder="Local (cidade)"
+                      inputProps={{
+                        ...params.inputProps,
+                        "data-cy": "input-cidade",
+                      }}
+                    />
                   )}
                   sx={{
                     "& .MuiOutlinedInput-notchedOutline": { border: "none" },
@@ -480,6 +498,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                 setDataISO(iso);
               }}
               InputLabelProps={{ shrink: true }}
+              inputProps={{ "data-cy": "input-data" }}
               label="Data"
               sx={{
                 "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.75)" },
@@ -531,6 +550,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
             <Box sx={{ mt: 1.5, mx: -2, mb: -2 }}>
               <Button
                 fullWidth
+                data-cy="btn-procurar"
                 variant="contained"
                 onClick={() => {
                   localStorage.setItem(
@@ -540,7 +560,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
                       dataISO,
                       tipos,
                       periodos,
-                    })
+                    }),
                   );
                   onSearch({ cidade, tipos, periodos, data: dataISO });
                 }}

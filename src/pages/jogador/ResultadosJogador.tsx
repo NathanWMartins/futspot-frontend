@@ -144,7 +144,7 @@ export default function ResultadosJogador() {
     ? periodosSel.map((p) => labelPeriodo[p]).join(", •")
     : "";
   const resumoPreco = `${formatMoney(faixaPreco[0])}–${formatMoney(
-    faixaPreco[1]
+    faixaPreco[1],
   )}/h`;
 
   return (
@@ -205,6 +205,7 @@ export default function ResultadosJogador() {
             return (
               <Card
                 key={l.id}
+                data-cy="results-card-local"
                 sx={{
                   bgcolor: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.08)",
@@ -212,6 +213,7 @@ export default function ResultadosJogador() {
                 }}
               >
                 <CardActionArea
+                  data-cy="results-card-local-action"
                   onClick={() =>
                     navigate(`/jogador/local/${l.id}`, {
                       state: {
@@ -352,6 +354,7 @@ export default function ResultadosJogador() {
 
           {!filtered.length ? (
             <Box
+              data-cy="results-empty"
               sx={{
                 p: 3,
                 borderRadius: 3,

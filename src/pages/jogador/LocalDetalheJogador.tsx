@@ -15,11 +15,13 @@ import {
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import LocalFotos from "../../components/jogador/LocalFotos";
 import { PriceTag } from "../../components/jogador/PriceTag";
 import type { HorarioFuncionamentoDTO, Modalidade } from "../../types/local";
 import { getDisponibilidadePorData } from "../../services/locaisService";
 import { criarAgendamento } from "../../services/agendamentoService";
+import MapDialog from "../../components/jogador/agenda/MapDialog";
 
 type LocalDetalheDTO = {
   id: number;
@@ -45,16 +47,17 @@ const labelTipo: Record<string, string> = {
 export default function LocalDetalheJogador() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [openMap, setOpenMap] = useState(false);
 
   const [snack, setSnack] = useState<{
-      open: boolean;
-      msg: string;
-      severity: "success" | "error";
-    }>({
-      open: false,
-      msg: "",
-      severity: "success",
-    });
+    open: boolean;
+    msg: string;
+    severity: "success" | "error";
+  }>({
+    open: false,
+    msg: "",
+    severity: "success",
+  });
 
   const location = useLocation();
   const navState = location.state as { local?: any; filtros?: any } | undefined;
@@ -103,7 +106,7 @@ export default function LocalDetalheJogador() {
           : [];
 
         setLocal((prev) =>
-          prev ? { ...prev, slotsDisponiveis: slots } : prev
+          prev ? { ...prev, slotsDisponiveis: slots } : prev,
         );
 
         setHorario((prev) => (slots.includes(prev) ? prev : ""));
@@ -194,7 +197,11 @@ export default function LocalDetalheJogador() {
             <ArrowBackRoundedIcon />
           </IconButton>
 
-          <Typography sx={{ fontWeight: 900, fontSize: 16 }} noWrap>
+          <Typography
+            data-cy="local-nome"
+            sx={{ fontWeight: 900, fontSize: 16 }}
+            noWrap
+          >
             {local.nome}
           </Typography>
         </Stack>
@@ -251,7 +258,6 @@ export default function LocalDetalheJogador() {
                 )}
               </Box>
 
-              {/* Preço */}
               <Box sx={{ textAlign: "right" }}>
                 <Stack
                   direction="row"
@@ -280,19 +286,45 @@ export default function LocalDetalheJogador() {
 
             <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
 
-            <Typography sx={{ opacity: 0.85, fontSize: 13 }}>
-              {local.endereco ?? ""}
-            </Typography>
+            <Box
+              onClick={() => setOpenMap(true)}
+              sx={{
+                mt: 0.5,
+                p: 1.25,
+                borderRadius: 2,
+                cursor: "pointer",
+                border: "1px dashed rgba(0,230,118,0.45)",
+                bgcolor: "rgba(0,230,118,0.08)",
+                transition: "all .2s ease",
+                "&:hover": {
+                  bgcolor: "rgba(0,230,118,0.14)",
+                  transform: "translateY(-1px)",
+                },
+              }}
+            >
+              <Stack direction="row" spacing={1} alignItems="flex-start">
+                <PlaceRoundedIcon sx={{ color: "#00E676", mt: "2px" }} />
+
+                <Box>
+                  <Typography sx={{ fontSize: 13, fontWeight: 900 }}>
+                    Ver localização no mapa
+                  </Typography>
+
+                  <Typography sx={{ fontSize: 12, opacity: 0.75 }}>
+                    {local.endereco ?? "Endereço não informado"}
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
 
             {local.descricao ? (
               <Typography sx={{ opacity: 0.7, fontSize: 13 }}>
-                {local.descricao}
+                <span style={{ fontWeight: 800 }}> Descrição: </span> {local.descricao}
               </Typography>
             ) : null}
           </Stack>
         </Box>
 
-        {/* 3) Agendamento */}
         <Typography sx={{ mt: 2.5, mb: 1, fontWeight: 900, fontSize: 16 }}>
           Agendamento
         </Typography>
@@ -327,6 +359,7 @@ export default function LocalDetalheJogador() {
                   <CalendarMonthRoundedIcon sx={{ opacity: 0.75 }} />
                   <Box
                     component="input"
+                    data-cy="local-input-data"
                     type="date"
                     value={data}
                     onChange={(e) => {
@@ -370,6 +403,7 @@ export default function LocalDetalheJogador() {
                       return (
                         <Chip
                           key={slot}
+                          data-cy="local-slot-horario"
                           label={slot}
                           onClick={() => setHorario(slot)}
                           sx={{
@@ -394,6 +428,7 @@ export default function LocalDetalheJogador() {
             {/* Botão */}
             <Button
               fullWidth
+              data-cy="btn-reservar"
               disabled={reservando || !data || !horario}
               onClick={handleReservar}
               sx={{
@@ -419,6 +454,7 @@ export default function LocalDetalheJogador() {
       >
         <Alert
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          data-cy="snackbar-feedback"
           severity={snack.severity}
           variant="filled"
           sx={{ width: "100%" }}
@@ -426,6 +462,13 @@ export default function LocalDetalheJogador() {
           {snack.msg}
         </Alert>
       </Snackbar>
+
+      <MapDialog
+        open={openMap}
+        onClose={() => setOpenMap(false)}
+        localNome={local.nome}
+        endereco={local.endereco}
+      />
     </Box>
   );
 }

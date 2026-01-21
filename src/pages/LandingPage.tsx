@@ -82,6 +82,7 @@ export const LandingPage: React.FC = () => {
 
           <Button
             color="inherit"
+            data-cy="btn-entrar"
             onClick={handleOpenAuth}
             sx={{ fontFamily: "'Poppins', sans-serif" }}
           >

@@ -223,7 +223,8 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                 fullWidth
                 size="small"
                 variant="filled"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}  
+                inputProps={{ "data-cy": "input-email" }}              
                 InputProps={{
                   disableUnderline: true,
                   sx: {
@@ -244,6 +245,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                 size="small"
                 variant="filled"
                 onChange={(e) => setSenha(e.target.value)}
+                inputProps={{ "data-cy": "input-senha" }}
                 InputProps={{
                   disableUnderline: true,
                   sx: {
@@ -259,6 +261,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
 
               <Button
                 type="submit"
+                data-cy="btn-submit-login"
                 variant="contained"
                 disabled= {loading}
                 fullWidth
