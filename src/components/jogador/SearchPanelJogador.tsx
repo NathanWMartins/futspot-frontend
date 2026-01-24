@@ -259,7 +259,7 @@ export default function SearchPanelJogador({ loadingSearch, onSearch }: Props) {
   return (
     <Box
       sx={{
-        borderRadius: { xs: 2, md: 2 },
+        borderRadius: "0 10px 10px 0",
         bgcolor: "#1E1E1E",
         border: "1px solid rgba(255,255,255,0.10)",
         boxShadow: "0 18px 40px rgba(0,0,0,0.55)",

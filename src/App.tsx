@@ -14,6 +14,7 @@ import AgendaJogador from "./pages/jogador/AgendaJogador";
 import Perfil from "./pages/Perfil";
 import UserLayout from "./pages/UserLayout";
 import PerfilJogador from "./pages/jogador/PerfilJogador";
+import Notificacoes from "./pages/Notificacoes";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/user" element={<UserLayout />}>
           <Route path="perfil" element={<Perfil />} />
+          <Route path="notificacoes" element={<Notificacoes />} />
         </Route>
         <Route element={<RequireAuth />}>
           {/* Locador Routes */}

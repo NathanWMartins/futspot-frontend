@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Badge } from "@mui/material";
 import type { SvgIconComponent } from "@mui/icons-material";
 
 interface SidebarItemProps {
@@ -6,6 +6,7 @@ interface SidebarItemProps {
   label: string;
   active?: boolean;
   open: boolean;
+  badgeCount?: number;
   onClick: () => void;
 }
 
@@ -14,6 +15,7 @@ export function SidebarItem({
   label,
   active = false,
   open,
+  badgeCount,
   onClick,
 }: SidebarItemProps) {
   return (
@@ -34,11 +36,25 @@ export function SidebarItem({
         },
       }}
     >
-      <Icon
+      <Badge
+        badgeContent={badgeCount}
+        color="error"
+        overlap="circular"
+        invisible={!badgeCount}
         sx={{
-          fontSize: 20,
+          "& .MuiBadge-badge": {
+            fontSize: 10,
+            height: 16,
+            minWidth: 16,
+          },
         }}
-      />
+      >
+        <Icon
+          sx={{
+            fontSize: 20,
+          }}
+        />
+      </Badge>
 
       {open && (
         <Typography
@@ -46,6 +62,7 @@ export function SidebarItem({
             fontSize: 14,
             fontWeight: 600,
             fontFamily: "'Poppins', sans-serif",
+            whiteSpace: "nowrap",
           }}
         >
           {label}

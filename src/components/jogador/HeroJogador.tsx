@@ -5,13 +5,9 @@ export default function HeroJogador() {
   return (
     <Box
       sx={{
-        width: "100vw",
+        width: "100%", 
         height: "100%",
         position: "relative",
-        left: "50%",
-        right: "50%",
-        ml: "-50vw",
-        mr: "-50vw",
         overflow: "hidden",
       }}
     >
@@ -23,11 +19,12 @@ export default function HeroJogador() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          objectPosition: "center",
+          objectPosition: "center",        
+          display: "block",
         }}
       />
 
-      {/* overlay suave */}
+      {/* overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -37,7 +34,7 @@ export default function HeroJogador() {
         }}
       />
 
-      {/* FRASE (responsiva) */}
+      {/* texto */}
       <Box
         sx={{
           position: "absolute",

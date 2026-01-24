@@ -84,6 +84,7 @@ export function Sidebar({ menu, user }: SidebarProps) {
             label={item.label}
             active={location.pathname === item.path}
             open={open}
+            badgeCount={item.badgeCount}
             onClick={() => navigate(item.path)}
           />
         ))}

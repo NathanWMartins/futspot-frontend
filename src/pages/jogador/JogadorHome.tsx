@@ -3,8 +3,6 @@ import {
   Box,
   Container,
   Snackbar,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import HeroJogador from "../../components/jogador/HeroJogador";
 import SearchPanelJogador from "../../components/jogador/SearchPanelJogador";
@@ -15,8 +13,6 @@ import { searchLocais } from "../../services/locaisService";
 
 export default function HomeJogador() {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [snack, setSnack] = useState<{
     open: boolean;
@@ -87,12 +83,17 @@ export default function HomeJogador() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#121212",
+        pl: { xs: 0, md: "72px" },
+      }}
+    >
       <Box sx={{ position: "relative" }}>
         <Box
           sx={{
             width: "100%",
-            pl: !isMobile ? 10 : 0,
             height: { xs: 260, sm: 260, md: 280 },
             overflow: "hidden",
             borderBottomLeftRadius: { xs: 10, md: 0 },
