@@ -9,13 +9,12 @@ type AuthContextType = {
     isAuthenticated: boolean;
 };
 
-const LS_TOKEN = "futspot_token";
 const LS_USER = "futspot_user";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem(LS_TOKEN));
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem(import.meta.env.VITE_LS_TOKEN));
     const [user, setUser] = useState<AuthUser | null>(() => {
         const raw = localStorage.getItem(LS_USER);
         return raw ? JSON.parse(raw) : null;
@@ -26,15 +25,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(token);
 
         localStorage.setItem(LS_USER, JSON.stringify(user));
-        if (token) localStorage.setItem(LS_TOKEN, token);
-        else localStorage.removeItem(LS_TOKEN);
+        if (token) localStorage.setItem(import.meta.env.VITE_LS_TOKEN, token);
+        else localStorage.removeItem(import.meta.env.VITE_LS_TOKEN);
     };
 
     const signOut = () => {
         setUser(null);
         setToken(null);
         localStorage.removeItem(LS_USER);
-        localStorage.removeItem(LS_TOKEN);
+        localStorage.removeItem(import.meta.env.VITE_LS_TOKEN);
     };
 
     const value = useMemo(
