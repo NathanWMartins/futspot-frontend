@@ -121,6 +121,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
             textAlign: "center",
             fontWeight: 600,
             letterSpacing: 0.5,
+            fontFamily: "'Poppins', sans-serif"
           }}
         >
           {isLogin ? "Entrar no FutSpot" : "Criar conta no FutSpot"}
@@ -150,10 +151,10 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                   },
                   "&.Mui-selected": {
                     bgcolor: "primary.main",
-                    color: "#000",
+                    color: "#fff",
                     boxShadow: "0 0 14px rgba(0, 230, 118, 0.7)",
                     "&:hover": {
-                      bgcolor: "#00ff80",
+                      bgcolor: "#01c563",
                     },
                   },
                 },
@@ -169,6 +170,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
               variant="fullWidth"
               sx={{
                 mb: 2,
+                fontFamily: "'Poppins', sans-serif",
                 "& .MuiTab-root": {
                   color: "text.secondary",
                   fontWeight: 500,
@@ -270,10 +272,12 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                   py: 1.2,
                   fontWeight: 700,
                   fontSize: 15,
+                  fontFamily: "'Poppins', sans-serif",
                   boxShadow: "0 0 20px rgba(0, 230, 118, 0.55)",
                   ":hover": {
                     boxShadow: "0 0 30px rgba(0, 230, 118, 0.8)",
                   },
+                  color: "#fff"
                 }}
               >
                 {loading

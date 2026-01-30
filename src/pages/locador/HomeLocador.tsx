@@ -218,7 +218,7 @@ export default function LocadorHome() {
 
   return (
     <>
-      <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pl: 3 }}>
         <Box
           sx={{
             maxWidth: 1120,
@@ -315,6 +315,7 @@ export default function LocadorHome() {
                   sx={{
                     textTransform: "none",
                     borderRadius: 10,
+                    color: "#fff",
                     px: 1.6,
                     boxShadow: "0 0 14px rgba(0, 230, 118, 0.55)",
                     whiteSpace: "nowrap",

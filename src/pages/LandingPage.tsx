@@ -52,9 +52,7 @@ export const LandingPage: React.FC = () => {
           <Stack
             direction="row"
             spacing={1}
-            alignItems="center"
-            onClick={() => navigate("/locador/home")}
-            sx={{ cursor: "pointer" }}
+            alignItems="center"            
           >
             <Box
               component="img"
@@ -84,7 +82,7 @@ export const LandingPage: React.FC = () => {
             color="inherit"
             data-cy="btn-entrar"
             onClick={handleOpenAuth}
-            sx={{ fontFamily: "'Poppins', sans-serif" }}
+            sx={{ fontFamily: "'Poppins', sans-serif", cursor: "pointer" }}
           >
             Entrar
           </Button>

@@ -31,6 +31,8 @@ import {
   chipOcupado,
   chipSolicitado,
 } from "../../utils/ChipsInfoAgendamento";
+import { useSearchParams } from "react-router-dom";
+import { normalizeHora } from "../../utils/notificacoesHelpers";
 
 type DisponibilidadeResponse = {
   fechado: boolean;
@@ -74,7 +76,16 @@ export default function LocadorAgenda() {
     [locais, localId],
   );
 
+  const [searchParams] = useSearchParams();
+
+  const localIdFromUrl = searchParams.get("localId");
+  const dataFromUrl = searchParams.get("data");
+  const horaFromUrl = searchParams.get("hora");
+
   const dateLabel = useMemo(() => formatDateLabel(date), [date]);
+
+  const [_, setSearchParams] = useSearchParams();
+  const [autoOpened, setAutoOpened] = useState(false);
 
   const openDialog = (slot: SlotInfo) => {
     setSelectedSlot(slot);
@@ -92,11 +103,12 @@ export default function LocadorAgenda() {
         setLoadingLocais(true);
 
         const { data } = await api.get<LocalInfo[]>("/locais");
-
         const list = Array.isArray(data) ? data : [];
         setLocais(list);
 
-        if (list.length > 0) setLocalId(list[0].id);
+        if (!localIdFromUrl && list.length > 0) {
+          setLocalId(list[0].id);
+        }
       } catch (e) {
         console.error(e);
         setLocais([]);
@@ -104,7 +116,7 @@ export default function LocadorAgenda() {
         setLoadingLocais(false);
       }
     })();
-  }, []);
+  }, [localIdFromUrl]);
 
   useEffect(() => {
     if (!localId) return;
@@ -132,7 +144,52 @@ export default function LocadorAgenda() {
         setLoadingAgenda(false);
       }
     })();
-  }, [localId, date]);  
+  }, [localId, date]);
+
+  useEffect(() => {
+    if (!localIdFromUrl || locais.length === 0) return;
+
+    const parsedId = Number(localIdFromUrl);
+    if (Number.isNaN(parsedId)) return;
+
+    const existe = locais.some((l) => l.id === parsedId);
+    if (existe) {
+      setLocalId(parsedId);
+    }
+  }, [localIdFromUrl, locais]);
+
+  useEffect(() => {
+    if (!dataFromUrl) return;
+
+    const [year, month, day] = dataFromUrl.split("-").map(Number);
+
+    const parsed = new Date(year, month - 1, day);
+
+    setDate(parsed);
+  }, [dataFromUrl]);
+
+  useEffect(() => {
+    if (autoOpened) return;
+    if (!horaFromUrl) return;
+    if (!slots.length) return;
+    if (!localId) return;
+
+    const horaNormalizada = normalizeHora(horaFromUrl);
+
+    const slot = slots.find((s) => s.inicio === horaNormalizada);
+
+    if (slot) {
+      setSelectedSlot(slot);
+      setOpenSlotDialog(true);
+      setAutoOpened(true);
+    }
+  }, [horaFromUrl, slots, localId, autoOpened]);
+
+  useEffect(() => {
+    if (openSlotDialog) {
+      setSearchParams({});
+    }
+  }, [openSlotDialog]);
 
   return (
     <>

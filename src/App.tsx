@@ -8,13 +8,13 @@ import LocadorLayout from "./pages/locador/LocadorLayout";
 import RequireAuth from "./routes/RequireAuth";
 import JogadorHome from "./pages/jogador/JogadorHome";
 import JogadorLayout from "./pages/jogador/JogadorLayout";
-import ResultadosJogador from "./pages/jogador/ResultadosJogador";
+import ResultadosJogador from "./pages/jogador/ResultadosPesquisaJogador";
 import LocalDetalheJogador from "./pages/jogador/LocalDetalheJogador";
 import AgendaJogador from "./pages/jogador/AgendaJogador";
 import Perfil from "./pages/Perfil";
 import UserLayout from "./pages/UserLayout";
 import PerfilJogador from "./pages/jogador/PerfilJogador";
-import Notificacoes from "./pages/Notificacoes";
+import { NotificacoesPage } from "./pages/Notificacoes";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/user" element={<UserLayout />}>
           <Route path="perfil" element={<Perfil />} />
-          <Route path="notificacoes" element={<Notificacoes />} />
+          <Route path="notificacoes" element={<NotificacoesPage />} />
         </Route>
         <Route element={<RequireAuth />}>
           {/* Locador Routes */}

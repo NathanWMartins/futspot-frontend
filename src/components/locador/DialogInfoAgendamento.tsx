@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -9,6 +10,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
@@ -61,19 +63,60 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
   const foto = local?.fotos?.[0] ?? "";
   const hasFoto = Boolean(foto);
 
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    msg: string;
+    severity: "success" | "error";
+  }>({
+    open: false,
+    msg: "",
+    severity: "success",
+  });
+  const showError = (msg: string) =>
+    setSnack({ open: true, msg, severity: "error" });
+  const showSuccess = (msg: string) =>
+    setSnack({ open: true, msg, severity: "success" });
+
   const onCancelar = async () => {
-    await api.delete(`/agendamentos/${slot.agendamentoId}`);
-    onClose();
+    try {
+      await api.delete(`/agendamentos/${slot.agendamentoId}`);
+      showSuccess("Agendamento cancelado com sucesso.");
+      onClose();
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Não foi possível cancelar o agendamento.";
+
+      showError(message);
+    }
   };
 
   const onAceitar = async () => {
-    await api.patch(`/agendamentos/${slot.agendamentoId}/confirmar`);
-    onClose();
+    try {
+      await api.patch(`/agendamentos/${slot.agendamentoId}/confirmar`);
+      showSuccess("Agendamento confirmado com sucesso.");
+      onClose();
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Não foi possível confirmar o agendamento.";
+
+      showError(message);
+    }
   };
 
   const onRecusar = async () => {
-    await api.patch(`/agendamentos/${slot.agendamentoId}/recusar`);
-    onClose();
+    try {
+      await api.patch(`/agendamentos/${slot.agendamentoId}/recusar`);
+      showSuccess("Agendamento recusado com sucesso.");
+      onClose();
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Não foi possível recusar o agendamento.";
+
+      showError(message);
+    }
   };
 
   return (
@@ -333,6 +376,22 @@ export default function SlotInfoDialog({ open, onClose, slot, local }: Props) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3500}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

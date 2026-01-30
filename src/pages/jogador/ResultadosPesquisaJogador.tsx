@@ -148,9 +148,8 @@ export default function ResultadosJogador() {
   )}/h`;
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", py: 2 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", py: 2, pl: { xs: 0, md: "72px" } }}>
       <Container maxWidth="lg" sx={{ pb: { xs: 10, md: 3 } }}>
-        {/* Card compacto no topo (clicável) */}
         <Card
           sx={{
             borderRadius: 4,
