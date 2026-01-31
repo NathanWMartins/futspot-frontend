@@ -4,6 +4,7 @@ import {
   Alert,
   Box,
   Container,
+  Divider,
   IconButton,
   Snackbar,
   Stack,
@@ -17,7 +18,6 @@ import ProfileTabs from "../components/jogador/perfil/ProfileTabs";
 import ContaSection from "../components/jogador/perfil/ContaSection";
 import EditarPerfilDialog from "../components/jogador/perfil/EditarPerfilDialog";
 import AlterarSenhaDialog from "../components/jogador/perfil/AlterarSenhaDialog";
-import PerfilStatsCardJogador from "../components/jogador/perfil/PerfilStatsCardJogador";
 import {
   getJogadorStats,
   getLocadorStats,
@@ -27,7 +27,15 @@ import {
 import { tempoNoApp } from "../utils/date";
 import { useAuth } from "../contexts/AuthContext";
 import type { UserDTO } from "../types/perfil";
-import PerfilStatsCardLocador from "../components/locador/perfil/PerfilStatsCardLocador";
+import StatCard from "../components/jogador/StatCard";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import StarIcon from "@mui/icons-material/Star";
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 
 type SnackState = {
   open: boolean;
@@ -79,6 +87,7 @@ export default function Perfil() {
       try {
         if (user.tipoUsuario === "jogador") {
           const s = await getJogadorStats();
+          console.log(s);
           setStats(s);
         }
 
@@ -200,22 +209,191 @@ function PerfilStatsSection({ user, stats }: { user: any; stats: any }) {
 
   if (user.tipoUsuario === "jogador") {
     return (
-      <PerfilStatsCardJogador
-        totalReservas={stats.totalReservas}
-        locaisDiferentes={stats.locaisDiferentes}
-        tempoNoAppLabel={tempoNoApp(stats.createdAt)}
-      />
+      <>
+        <Stack
+          sx={{
+            bgcolor: "rgba(255,255,255,0.03)",
+            borderRadius: 1.5,
+            px: 2,
+            py: 1,
+            mb: 2,
+          }}
+        >
+          <StatCard
+            label="Avaliações feitas"
+            value={
+              stats.mediaAvaliacoes === null ? (
+                "Ainda não avaliou"
+              ) : (
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {stats.mediaAvaliacoes}
+                  </Typography>
+
+                  <StarIcon
+                    sx={{ fontSize: 16, color: "#fff", opacity: 0.8 }}
+                  />
+
+                  <Typography sx={{ fontSize: 12, opacity: 0.7 }}>
+                    {"(" + stats.totalAvaliacoes}{" "}
+                    {stats.totalAvaliacoes === 1 ? "avaliação)" : "avaliações)"}
+                  </Typography>
+                </Stack>
+              )
+            }
+            icon={
+              <StarIcon
+                sx={{
+                  fontSize: 18,
+                  color:
+                    stats.mediaAvaliacoes === null ? "opacity.5" : "#FFD700",
+                }}
+              />
+            }
+            highlight={stats.mediaAvaliacoes !== null}
+          />
+        </Stack>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Stack
+          sx={{
+            bgcolor: "rgba(255,255,255,0.03)",
+            borderRadius: 1.5,
+            px: 2,
+            py: 1.5,
+          }}
+        >
+          <StatCard
+            label="Tempo no App"
+            value={tempoNoApp(stats.createdAt)}
+            icon={<AccessTimeRoundedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Agendamentos realizados"
+            value={stats.totalReservas}
+            icon={<EventAvailableIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Locais Diferentes"
+            value={stats.locaisDiferentes}
+            icon={<PlaceOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Taxa de cancelamento"
+            value={`${stats.taxaCancelamento}%`}
+            icon={<CancelOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Comportamento"
+            value={stats.comportamento}
+            highlight
+            icon={<VerifiedUserIcon sx={{ fontSize: 18, color: "#00E676" }} />}
+          />
+        </Stack>
+      </>
     );
   }
 
   if (user.tipoUsuario === "locador") {
     return (
-      <PerfilStatsCardLocador
-        totalQuadras={stats.totalQuadras}
-        totalReservas={stats.totalReservas}
-        totalFaturamento={stats.totalFaturamento}
-        tempoNoApp={tempoNoApp(stats.createdAt)}
-      />
+      <>
+        <Stack
+          sx={{
+            bgcolor: "rgba(255,255,255,0.03)",
+            borderRadius: 1.5,
+            px: 2,
+            py: 1,
+            mb: 2,
+          }}
+        >
+          <StatCard
+            label="Avaliações recebidas"
+            value={
+              stats.mediaAvaliacoes === null ? (
+                "Ainda não avaliou"
+              ) : (
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {stats.mediaAvaliacoes}
+                  </Typography>
+
+                  <StarIcon
+                    sx={{ fontSize: 16, color: "#fff", opacity: 0.8 }}
+                  />
+
+                  <Typography sx={{ fontSize: 12, opacity: 0.7 }}>
+                    {"(" + stats.totalAvaliacoes}{" "}
+                    {stats.totalAvaliacoes === 1 ? "avaliação)" : "avaliações)"}
+                  </Typography>
+                </Stack>
+              )
+            }
+            icon={
+              <StarIcon
+                sx={{
+                  fontSize: 18,
+                  color:
+                    stats.mediaAvaliacoes === null ? "opacity.5" : "#FFD700",
+                }}
+              />
+            }
+            highlight={stats.mediaAvaliacoes !== null}
+          />
+        </Stack>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Stack
+          sx={{
+            bgcolor: "rgba(255,255,255,0.03)",
+            borderRadius: 1.5,
+            px: 2,
+            py: 1.5,
+          }}
+        >
+          <StatCard
+            label="Tempo no app"
+            value={tempoNoApp(stats.createdAt)}
+            icon={<AccessTimeRoundedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Locais cadastrados"
+            value={stats.locaisCadastrados}
+            icon={<PlaceOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Reservas recebidas"
+            value={stats.totalReservas}
+            icon={<EventAvailableOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Faturamento total"
+            value={stats.totalFaturamento}
+            icon={<MonetizationOnOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Taxa de cancelamento"
+            value={`${stats.taxaCancelamento}%`}
+            icon={<CancelOutlinedIcon sx={{ fontSize: 18, opacity: 0.6 }} />}
+          />
+          <Divider sx={{ my: 1 }} />
+          <StatCard
+            label="Comportamento"
+            value={stats.comportamento}
+            highlight
+            icon={<VerifiedUserIcon sx={{ fontSize: 18, color: "#00E676" }} />}
+          />
+        </Stack>
+      </>
     );
   }
 

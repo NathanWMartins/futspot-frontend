@@ -12,10 +12,8 @@ import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import CancelIcon from "@mui/icons-material/Cancel";
 import type { AgendamentoCardDTO } from "../../../types/agendamento";
 import { formatarDataBR } from "../../../utils/date";
-import RateReviewRoundedIcon from "@mui/icons-material/RateReviewRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { Tooltip } from "@mui/material";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 
 type Props = {
@@ -232,6 +230,12 @@ export default function AgendamentoCard({
                           </Typography>
                         </IconButton>
                       </Stack>
+                    ) : isSolicitado ? (
+                      <Typography
+                        sx={{ fontSize: 12, opacity: 0.6, pr: 1, mt: 0.2 }}
+                      >
+                        Solicitação expirada
+                      </Typography>
                     ) : null
                   ) : null}
                 </Stack>
@@ -460,19 +464,13 @@ export default function AgendamentoCard({
                         </Typography>
                       </IconButton>
                     </Stack>
-                  ) : (
-                    <Tooltip title="Disponível após o horário" arrow>
-                      <span>
-                        <IconButton
-                          disabled
-                          sx={{ color: "rgba(255,255,255,0.25)", p: 0.45 }}
-                          aria-label="Avaliar indisponível"
-                        >
-                          <RateReviewRoundedIcon fontSize="small" />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
-                  )
+                  ) : isSolicitado ? (
+                    <Typography
+                      sx={{ fontSize: 12, opacity: 0.6, pr: 1, mt: 0.2 }}
+                    >
+                      Solicitação expirada
+                    </Typography>
+                  ) : null
                 ) : null}
               </Stack>
             </Stack>
