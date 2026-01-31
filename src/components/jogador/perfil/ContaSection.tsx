@@ -12,7 +12,7 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import HttpsOutlinedIcon from '@mui/icons-material/HttpsOutlined';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+// import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
 type Props = {
   onOpenDados: () => void;
@@ -78,7 +78,7 @@ export default function ContaSection({
   onOpenDados,
   onOpenSenha,
   onLogout,
-  onDelete,
+  // onDelete,
 }: Props) {
   return (
     <Card
