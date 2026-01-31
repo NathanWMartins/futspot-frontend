@@ -125,7 +125,7 @@ export default function Perfil() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#121212", color: "#fff", pb: 6 }}>
+    <Box sx={{ minHeight: "100vh", color: "#fff", pb: 6 }}>
       <Container maxWidth="md" sx={{ pt: 2 }}>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
           <IconButton

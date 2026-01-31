@@ -9,8 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
-import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import HttpsOutlinedIcon from '@mui/icons-material/HttpsOutlined';
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
@@ -84,20 +84,19 @@ export default function ContaSection({
     <Card
       sx={{
         borderRadius: 4,
-        bgcolor: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        bgcolor: "rgba(4, 4, 4, 0.3)",
       }}
     >
       <CardContent sx={{ p: 1.25 }}>
         <List disablePadding sx={{ display: "grid", gap: 0.5 }}>
           <Row
-            icon={<PersonRoundedIcon />}
+            icon={<Person2OutlinedIcon />}
             title="Dados pessoais"
             subtitle="Nome, telefone e cidade"
             onClick={onOpenDados}
           />
           <Row
-            icon={<LockRoundedIcon />}
+            icon={<HttpsOutlinedIcon />}
             title="Senha"
             subtitle="Alterar senha da conta"
             onClick={onOpenSenha}
@@ -111,13 +110,13 @@ export default function ContaSection({
             subtitle="Encerrar sessão"
             onClick={onLogout}
           />
-          <Row
+          {/* <Row
             icon={<DeleteOutlineRoundedIcon />}
             title="Excluir conta"
             subtitle="Ação irreversível"
             onClick={onDelete}
             danger
-          />
+          /> */}
         </List>
       </CardContent>
     </Card>

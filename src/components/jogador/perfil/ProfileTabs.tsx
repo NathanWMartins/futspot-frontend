@@ -1,6 +1,6 @@
 import { Box, Stack, Tab, Tabs } from "@mui/material";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 type Props = {
   value: 0 | 1;
@@ -42,7 +42,7 @@ export default function ProfileTabs({ value, onChange }: Props) {
           value={0}
           label={
             <Stack direction="row" spacing={0.8} alignItems="center">
-              <PersonRoundedIcon fontSize="small" />
+              <Person2OutlinedIcon fontSize="small" />
               <span>Sobre você</span>
             </Stack>
           }
@@ -51,7 +51,7 @@ export default function ProfileTabs({ value, onChange }: Props) {
           value={1}
           label={
             <Stack direction="row" spacing={0.8} alignItems="center">
-              <SettingsRoundedIcon fontSize="small" />
+              <SettingsOutlinedIcon fontSize="small" />
               <span>Conta</span>
             </Stack>
           }
