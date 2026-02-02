@@ -14,6 +14,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
@@ -33,6 +34,8 @@ import {
   type TipoLocal,
 } from "../../services/locadoresService";
 import LocalDialog from "../../components/locador/DialogEditarLocal";
+import { CalendarMonth } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const dias: { id: DiaSemana; label: string }[] = [
   { id: 0, label: "Dom" },
@@ -45,7 +48,7 @@ const dias: { id: DiaSemana; label: string }[] = [
 ];
 
 export function buildDefaultHorarios(
-  fromBackend?: HorarioDia[] | undefined
+  fromBackend?: HorarioDia[] | undefined,
 ): HorarioDia[] {
   if (fromBackend?.length) return fromBackend;
 
@@ -60,6 +63,7 @@ export function buildDefaultHorarios(
 function LocadorLocais() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   const [locais, setLocais] = useState<Local[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +72,7 @@ function LocadorLocais() {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const [selectedLocal, setSelectedLocal] = useState<LocalFormValues | null>(
-    null
+    null,
   );
 
   const [snack, setSnack] = useState<{
@@ -196,7 +200,7 @@ function LocadorLocais() {
 
   const handleCreate = async (
     payload: LocalPayload,
-    extras: { novasFotos: File[] }
+    extras: { novasFotos: File[] },
   ) => {
     try {
       const uploadedUrls = extras.novasFotos?.length
@@ -219,7 +223,7 @@ function LocadorLocais() {
   const handleUpdate = async (
     id: number,
     payload: LocalPayload,
-    extras: { novasFotos: File[] }
+    extras: { novasFotos: File[] },
   ) => {
     try {
       const uploadedUrls = extras.novasFotos?.length
@@ -290,7 +294,11 @@ function LocadorLocais() {
               sx={{ mb: 1 }}
             >
               <Box>
-                <Typography variant="h6" fontWeight={700} fontFamily={"'Poppins', sans-serif"}>
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  fontFamily={"'Poppins', sans-serif"}
+                >
                   Meus locais
                 </Typography>
                 <Typography sx={{ fontSize: 14, opacity: 0.7 }}>
@@ -331,7 +339,6 @@ function LocadorLocais() {
                     boxShadow: "0 0 16px rgba(0, 230, 118, 0.6)",
                     fontFamily: "'Poppins', sans-serif",
                   }}
-                  
                   onClick={openCreate}
                 >
                   Cadastrar novo local
@@ -431,11 +438,39 @@ function LocadorLocais() {
                                 borderRadius: "50%",
                                 boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
                                 ml: 1,
+                                mr: 1,
                                 "&:hover": { bgcolor: "#00c964" },
                               }}
                             >
                               <EditIcon sx={{ fontSize: 18 }} />
                             </IconButton>
+                            <Tooltip title="Gerenciar mensalidades">
+                              <IconButton
+                                onClick={() =>
+                                  navigate(
+                                    `/locador/locais/${local.id}/mensalidade`,
+                                    { state: { nomeLocal: local.nome } },
+                                  )
+                                }
+                                sx={{
+                                  bgcolor: "#00E676",
+                                  color: "black",
+                                  width: 34,
+                                  height: 34,
+                                  borderRadius: "50%",
+                                  boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
+                                  "&:hover": { bgcolor: "#00c964" },
+                                  marginRight: "auto",
+                                }}
+                              >
+                                <CalendarMonth
+                                  sx={{
+                                    fontSize: 18,
+                                    color: "black",
+                                  }}
+                                />
+                              </IconButton>
+                            </Tooltip>
                           </Stack>
 
                           <Box sx={{ mt: 2 }}>
@@ -560,6 +595,7 @@ function LocadorLocais() {
                                   width: 40,
                                   height: 40,
                                   mt: 3,
+                                  mr: 1,
                                   borderRadius: "50%",
                                   boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
                                   "&:hover": { bgcolor: "#00c964" },
@@ -569,7 +605,33 @@ function LocadorLocais() {
                                 <EditIcon
                                   sx={{
                                     fontSize: 20,
-                                    opacity: 0.6,
+                                    color: "black",
+                                  }}
+                                />
+                              </IconButton>
+                              <IconButton
+                                onClick={() =>
+                                  navigate(
+                                    `/locador/locais/${local.id}/mensalidade`,
+                                    { state: { nomeLocal: local.nome } },
+                                  )
+                                }
+                                sx={{
+                                  bgcolor: "#00E676",
+                                  color: "black",
+                                  width: 40,
+                                  height: 40,
+                                  mt: 3,
+                                  ml: 1,
+                                  borderRadius: "50%",
+                                  boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
+                                  "&:hover": { bgcolor: "#00c964" },
+                                  marginRight: "auto",
+                                }}
+                              >
+                                <CalendarMonth
+                                  sx={{
+                                    fontSize: 20,
                                     color: "black",
                                   }}
                                 />

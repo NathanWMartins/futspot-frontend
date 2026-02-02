@@ -15,6 +15,7 @@ import Perfil from "./pages/Perfil";
 import UserLayout from "./pages/UserLayout";
 import PerfilJogador from "./pages/jogador/PerfilJogador";
 import { NotificacoesPage } from "./pages/Notificacoes";
+import MensalidadeLocalPage from "./pages/locador/MensalidadeLocalPage";
 
 function App() {
   return (
@@ -30,6 +31,10 @@ function App() {
           <Route path="/locador" element={<LocadorLayout />}>
             <Route path="home" element={<LocadorHome />} />
             <Route path="locais" element={<LocadorLocais />} />
+            <Route
+              path="locais/:id/mensalidade"
+              element={<MensalidadeLocalPage />}
+            />
             <Route path="agenda" element={<AgendaLocador />} />
             <Route path="jogador/:id" element={<PerfilJogador />} />
           </Route>
