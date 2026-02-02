@@ -4,6 +4,7 @@ import {
   Box,
   Paper,
   Avatar,
+  Badge,
 } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
@@ -13,16 +14,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import LogoFutSpotDark from "../../assets/LogoFutSpotDark.png";
 import LogoFutSpotOutlined from "../../assets/LogoFutSpotOutlined.png";
 import { useEffect, useState } from "react";
-
-const items = [
-  { label: "Locais", value: "/locador/locais", icon: <PlaceOutlinedIcon /> },
-  { label: "Agenda", value: "/locador/agenda", icon: <EventOutlinedIcon /> },
-  {
-    label: "Avisos",
-    value: "/user/notificacoes",
-    icon: <NotificationsNoneIcon />,
-  },
-];
+import { getNotificacoesNaoLidasCount } from "../../services/notificacoesService";
 
 const PROFILE_PATH = "/user/perfil";
 
@@ -32,6 +24,34 @@ export default function BottomNavLocador() {
   const { user } = useAuth();
 
   const [animatedOnce, setAnimatedOnce] = useState<Record<string, boolean>>({});
+  const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState<number>(0);
+
+  const items = [
+    { label: "Locais", value: "/locador/locais", icon: <PlaceOutlinedIcon /> },
+    { label: "Agenda", value: "/locador/agenda", icon: <EventOutlinedIcon /> },
+    {
+      label: "Avisos",
+      value: "/user/notificacoes",
+      icon: (
+        <Badge
+          badgeContent={notificacoesNaoLidas}
+          color="error"
+          overlap="circular"
+          invisible={notificacoesNaoLidas === 0}
+          sx={{
+            "& .MuiBadge-badge": {
+              fontSize: 10,
+              height: 18,
+              minWidth: 18,
+              borderRadius: 9,
+            },
+          }}
+        >
+          <NotificationsNoneIcon />
+        </Badge>
+      ),
+    },
+  ];
 
   const current = location.pathname.startsWith(PROFILE_PATH)
     ? PROFILE_PATH
@@ -55,6 +75,15 @@ export default function BottomNavLocador() {
       return () => clearTimeout(timer);
     }
   }, [current, animatedOnce]);
+
+  useEffect(() => {
+    async function carregar() {
+      const total = await getNotificacoesNaoLidasCount();
+      setNotificacoesNaoLidas(total);
+    }
+
+    carregar();
+  }, []);
 
   return (
     <Paper
