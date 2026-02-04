@@ -15,6 +15,11 @@ import {
   useMediaQuery,
   useTheme,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
@@ -36,6 +41,7 @@ import {
 import LocalDialog from "../../components/locador/DialogEditarLocal";
 import { CalendarMonth } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const dias: { id: DiaSemana; label: string }[] = [
   { id: 0, label: "Dom" },
@@ -74,6 +80,10 @@ function LocadorLocais() {
   const [selectedLocal, setSelectedLocal] = useState<LocalFormValues | null>(
     null,
   );
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const [localSelecionado, setLocalSelecionado] = useState<any>(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [snack, setSnack] = useState<{
     open: boolean;
@@ -240,6 +250,31 @@ function LocadorLocais() {
       console.error(err);
       showError("Erro ao atualizar local.");
       throw err;
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!localSelecionado) return;
+
+    try {
+      setLoadingDelete(true);
+
+      await api.delete(`/locais/${localSelecionado.id}`);
+
+      showSuccess("Local removido com sucesso!");
+
+      setLocais((prev) => prev.filter((l) => l.id !== localSelecionado.id));
+
+      setOpenDelete(false);
+      setLocalSelecionado(null);
+    } catch (err: any) {
+      showError(
+        err?.response?.data?.message ||
+          "Erro ao remover local. Tente novamente mais tarde.",
+      );
+      console.error(err);
+    } finally {
+      setLoadingDelete(false);
     }
   };
 
@@ -471,6 +506,26 @@ function LocadorLocais() {
                                 />
                               </IconButton>
                             </Tooltip>
+                            <Tooltip title="Remover local">
+                            <IconButton
+                              onClick={() => {
+                                setLocalSelecionado(local);
+                                setOpenDelete(true);
+                              }}
+                              sx={{
+                                bgcolor: "#FF5252",
+                                color: "white",
+                                width: 34,
+                                height: 34,
+                                ml: 1,
+                                borderRadius: "50%",
+                                boxShadow: "0 0 12px rgba(255, 82, 82, 0.7)",
+                                "&:hover": { bgcolor: "#e04848" },
+                              }}
+                            >
+                              <DeleteIcon sx={{ fontSize: 20 }} />
+                            </IconButton>
+                            </Tooltip>
                           </Stack>
 
                           <Box sx={{ mt: 2 }}>
@@ -636,6 +691,25 @@ function LocadorLocais() {
                                   }}
                                 />
                               </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  setLocalSelecionado(local);
+                                  setOpenDelete(true);
+                                }}
+                                sx={{
+                                  bgcolor: "#FF5252",
+                                  color: "white",
+                                  width: 40,
+                                  height: 40,
+                                  mt: 3,
+                                  ml: 1,
+                                  borderRadius: "50%",
+                                  boxShadow: "0 0 12px rgba(255, 82, 82, 0.7)",
+                                  "&:hover": { bgcolor: "#e04848" },
+                                }}
+                              >
+                                <DeleteIcon sx={{ fontSize: 20 }} />
+                              </IconButton>
                             </CardContent>
                           </Card>
                         </Box>
@@ -673,6 +747,37 @@ function LocadorLocais() {
           onCreate={handleCreate}
           onUpdate={handleUpdate}
         />
+
+        <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+          <DialogTitle>Remover local</DialogTitle>
+
+          <DialogContent>
+            <DialogContentText>
+              Tem certeza que deseja remover o local{" "}
+              <strong>{localSelecionado?.nome}</strong>?
+              <br />
+              Essa ação não pode ser desfeita.
+            </DialogContentText>
+          </DialogContent>
+
+          <DialogActions>
+            <Button
+              onClick={() => setOpenDelete(false)}
+              disabled={loadingDelete}
+            >
+              Cancelar
+            </Button>
+
+            <Button
+              color="error"
+              variant="contained"
+              onClick={handleConfirmDelete}
+              disabled={loadingDelete}
+            >
+              {loadingDelete ? "Removendo..." : "Remover"}
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Snackbar
           open={snack.open}
