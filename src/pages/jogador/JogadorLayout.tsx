@@ -5,12 +5,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import { jogadorMenu } from "../../components/sidebar/menus";
 import { Sidebar } from "../../components/sidebar/Sidebar";
 import { useEffect, useState } from "react";
-import { getNotificacoesNaoLidasCount } from "../../services/notificacoesService";
+import { useNotificacao } from "../../contexts/NotificacaoContext";
 
 export default function JogadorLayout() {
   const isMobile = useMediaQuery("(max-width:900px)");
   const { user } = useAuth();
-  const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState(0);
+  const { naoLidasCount, reloadNaoLidasCount } = useNotificacao();
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
@@ -20,18 +20,9 @@ export default function JogadorLayout() {
     msg: "",
     severity: "success",
   });
-  const showError = (msg: string) =>
-    setSnack({ open: true, msg, severity: "error" });
 
   useEffect(() => {
-    try {
-      getNotificacoesNaoLidasCount().then((count) =>
-        setNotificacoesNaoLidas(count),
-      );
-    } catch (err) {
-      console.error(err);
-      showError("Erro ao salvar perfil.");
-    }
+    reloadNaoLidasCount();
   }, []);
 
   return (
@@ -39,7 +30,7 @@ export default function JogadorLayout() {
       <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
         {!isMobile && (
           <Sidebar
-            menu={jogadorMenu(notificacoesNaoLidas)}
+            menu={jogadorMenu(naoLidasCount)}
             user={{
               nome: user?.nome ?? "User",
               fotoUrl: user?.fotoUrl ?? "",

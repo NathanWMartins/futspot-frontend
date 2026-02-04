@@ -6,12 +6,12 @@ import BottomNavLocador from "../components/locador/BottomNavLocador";
 import { Sidebar } from "../components/sidebar/Sidebar";
 import { jogadorMenu, locadorMenu } from "../components/sidebar/menus";
 import { useEffect, useState } from "react";
-import { getNotificacoesNaoLidasCount } from "../services/notificacoesService";
+import { useNotificacao } from "../contexts/NotificacaoContext";
 
 export default function UserLayout() {
   const { user } = useAuth();
   const isMobile = useMediaQuery("(max-width:900px)");
-  const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState(0);
+  const { naoLidasCount, reloadNaoLidasCount } = useNotificacao();
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
@@ -21,19 +21,10 @@ export default function UserLayout() {
     msg: "",
     severity: "success",
   });
-  const showError = (msg: string) =>
-    setSnack({ open: true, msg, severity: "error" });
-
+  
   useEffect(() => {
-    try {
-      getNotificacoesNaoLidasCount().then((count) =>
-        setNotificacoesNaoLidas(count)
-      );
-    } catch (err) {
-      console.error(err);
-      showError("Erro ao salvar perfil.");
-    }
-  }, []);
+      reloadNaoLidasCount();
+    }, []);
 
   if (!user) return null;
 
@@ -42,7 +33,7 @@ export default function UserLayout() {
       <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
         {!isMobile && user.tipoUsuario === "jogador" && (
           <Sidebar
-            menu={jogadorMenu(notificacoesNaoLidas)}
+            menu={jogadorMenu(naoLidasCount)}
             user={{
               nome: user?.nome ?? "User",
               fotoUrl: user?.fotoUrl ?? "",
@@ -52,7 +43,7 @@ export default function UserLayout() {
         )}
         {!isMobile && user.tipoUsuario === "locador" && (
           <Sidebar
-            menu={locadorMenu(notificacoesNaoLidas)}
+            menu={locadorMenu(naoLidasCount)}
             user={{
               nome: user?.nome ?? "User",
               fotoUrl: user?.fotoUrl ?? "",

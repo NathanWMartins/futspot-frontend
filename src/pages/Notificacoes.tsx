@@ -23,6 +23,7 @@ import {
 } from "../services/notificacoesService";
 import NotificacoesNaoLidasTab from "../components/avisos/NotificacoesNaoLidasTab";
 import NotificacoesLidasTab from "../components/avisos/NotificacoesLidasTab";
+import { useNotificacao } from "../contexts/NotificacaoContext";
 
 export function NotificacoesPage() {
   const navigate = useNavigate();
@@ -42,18 +43,21 @@ export function NotificacoesPage() {
     severity: "success" as "success" | "error" | "warning" | "info",
   });
 
+  const { setNaoLidasCount } = useNotificacao();
+
   async function load() {
     try {
       setLoading(true);
 
-      const [nl, l] = await Promise.all([
+      const [nl, l, count] = await Promise.all([
         getNotificacoesNaoLidas(),
         getNotificacoesLidas(),
-        getNotificacoesNaoLidasCount()
+        getNotificacoesNaoLidasCount(),
       ]);
 
       setNaoLidas(nl);
       setLidas(l);
+      setNaoLidasCount(count);
     } catch (e) {
       setSnack({
         open: true,

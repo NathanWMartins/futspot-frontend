@@ -5,12 +5,12 @@ import { Sidebar } from "../../components/sidebar/Sidebar";
 import { locadorMenu } from "../../components/sidebar/menus";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { getNotificacoesNaoLidasCount } from "../../services/notificacoesService";
+import { useNotificacao } from "../../contexts/NotificacaoContext";
 
 export default function LocadorLayout() {
   const isMobile = useMediaQuery("(max-width:900px)");
   const { user } = useAuth();
-  const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState(0);
+  const { naoLidasCount, reloadNaoLidasCount } = useNotificacao();
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
@@ -20,18 +20,9 @@ export default function LocadorLayout() {
     msg: "",
     severity: "success",
   });
-  const showError = (msg: string) =>
-    setSnack({ open: true, msg, severity: "error" });
 
   useEffect(() => {
-    try {
-      getNotificacoesNaoLidasCount().then((count) =>
-        setNotificacoesNaoLidas(count),
-      );
-    } catch (err) {
-      console.error(err);
-      showError("Erro ao salvar perfil.");
-    }
+    reloadNaoLidasCount();
   }, []);
 
   return (
@@ -39,7 +30,7 @@ export default function LocadorLayout() {
       <Box sx={{ minHeight: "100vh", bgcolor: "#121212" }}>
         {!isMobile && (
           <Sidebar
-            menu={locadorMenu(notificacoesNaoLidas)}
+            menu={locadorMenu(naoLidasCount)}
             user={{
               nome: user?.nome ?? "User",
               fotoUrl: user?.fotoUrl ?? "",

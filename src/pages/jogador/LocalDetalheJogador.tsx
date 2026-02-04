@@ -265,7 +265,13 @@ export default function LocalDetalheJogador() {
                   alignItems="flex-start"
                   justifyContent="flex-end"
                 >
-                  <PriceTag value={180} />
+                  {local.precoHora ? (
+                    <PriceTag value={local.precoHora } />
+                  ): (
+                    <Typography sx={{ fontSize: 14, opacity: 0.7 }}>
+                      Preço não informado
+                    </Typography>
+                  )}
                 </Stack>
 
                 {local.tipoLocal ? (
