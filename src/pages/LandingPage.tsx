@@ -7,17 +7,18 @@ import {
   Box,
   Container,
   Stack,
-  Chip,
   Snackbar,
   Alert,
   useMediaQuery,
   useTheme,
+  IconButton,
 } from "@mui/material";
 import FutspotLogo from "../assets/LogoFutSpotDark.png";
 import { AuthDialog } from "../components/AuthDialog";
-import { NeonFieldHeroVisual } from "../components/NeonFieldHeroVisual";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Typewriter } from "react-simple-typewriter";
+import { FieldScene } from "../components/landing/campo/FieldScene";
+import { Email, Instagram, WhatsApp } from "@mui/icons-material";
 
 export const LandingPage: React.FC = () => {
   const [authOpen, setAuthOpen] = useState(false);
@@ -45,50 +46,76 @@ export const LandingPage: React.FC = () => {
     }
   }, [location, navigate]);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
-      <AppBar position="sticky" elevation={0}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"            
-          >
-            <Box
-              component="img"
-              src={FutspotLogo}
-              alt="FutSpot"
-              sx={{
-                height: 40,
-                width: "auto",
-              }}
-            />
-
-            <Typography
-              variant="h6"
-              fontWeight={800}
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                userSelect: "none",
-                color: "#00E676",
-                letterSpacing: 0.4,
-              }}
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{ bgcolor: "background.default", mt: 2 }}
+      >
+        <Toolbar disableGutters>
+          <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 6, lg: 8 } }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
             >
-              Fut<span style={{ color: "#fff" }}>Spot</span>
-            </Typography>
-          </Stack>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ cursor: "pointer" }}
+                onClick={scrollToTop}
+              >
+                <Box
+                  component="img"
+                  src={FutspotLogo}
+                  alt="FutSpot"
+                  sx={{ height: 40 }}
+                />
 
-          <Button
-            color="inherit"
-            data-cy="btn-entrar"
-            onClick={handleOpenAuth}
-            sx={{ fontFamily: "'Poppins', sans-serif", cursor: "pointer" }}
-          >
-            Entrar
-          </Button>
+                <Typography
+                  variant="h6"
+                  fontWeight={800}
+                  sx={{
+                    fontFamily: "'Poppins', sans-serif",
+                    color: "#00E676",
+                    pr: 5,
+                  }}
+                >
+                  Fut<span style={{ color: "#fff" }}>Spot</span>
+                </Typography>
+
+                {!isMobile && (
+                  <>
+                    <Button href="#sobre" color="inherit">
+                      Sobre
+                    </Button>
+                    <Button href="#contato" color="inherit" sx={{ pl: 2 }}>
+                      Contato
+                    </Button>
+                  </>
+                )}
+              </Stack>
+
+              <Button
+                variant="contained"
+                size="large"
+                sx={{ color: "#fff", borderRadius: "8px" }}
+                onClick={handleOpenAuth}
+              >
+                Entrar
+              </Button>
+            </Stack>
+          </Container>
         </Toolbar>
       </AppBar>
 
+      {/* Hero Campo*/}
       <Box
         sx={{
           minHeight: "calc(100vh - 64px)",
@@ -97,24 +124,23 @@ export const LandingPage: React.FC = () => {
           bgcolor: "background.default",
         }}
       >
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 6, lg: 8 } }}>
           <Stack
             direction={{ xs: "column", md: "row" }}
-            spacing={6}
+            spacing={{ xs: 3, md: 0 }}
             alignItems="center"
           >
-            <Box flex={1}>
-              {!isMobile ? (
-                <Chip
-                  label="Agende seu jogo em minutos"
-                  color="primary"
-                  variant="outlined"
-                  sx={{ mb: 2, fontWeight: 600 }}
-                />
-              ) : null}
-              <Typography variant="h3" component="h1" gutterBottom>
+            <Box flex={1} sx={{ pl: { md: 4 }, pt: { xs: 6, md: 0 } }}>
+              <Typography variant="h3" component="h1">
                 Organize suas{" "}
-                <Box component="span" color="primary.main">
+                <Box
+                  component="span"
+                  color="primary.main"
+                  sx={{
+                    display: "inline-block",
+                    maxWidth: 300,
+                  }}
+                >
                   <Typewriter
                     words={["partidas", "reservas", "quadras"]}
                     loop={0}
@@ -124,31 +150,131 @@ export const LandingPage: React.FC = () => {
                     deleteSpeed={50}
                     delaySpeed={1500}
                   />
-                </Box>{" "}
+                </Box>
+              </Typography>
+
+              <Typography variant="h3" sx={{ mt: 1 }}>
                 sem dor de cabeça.
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                O FutSpot conecta jogadores e locadores de quadras em um só
-                lugar. Encontre horários disponíveis, reserve sua quadra
-                favorita e gerencie seus agendamentos de forma simples e rápida.
-              </Typography>
-              {!isMobile ? (
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+
+                <Stack direction="row" spacing={2} mt={4}>
                   <Button
                     variant="contained"
                     size="large"
                     onClick={handleOpenAuth}
-                    sx={{ fontFamily: "'Poppins', sans-serif", color: "#fff" }}
+                    sx={{ color: "#fff", borderRadius: "8px" }}
                   >
                     Começar agora
                   </Button>
                 </Stack>
-              ) : null}
             </Box>
 
-            <Box flex={1} sx={{ width: "100%", ml: { md: 6, lg: 10 } }}>
-              <NeonFieldHeroVisual />
+            <Box sx={{ width: "100%", maxWidth: 520, ml: { md: -6, lg: -10 } }}>
+              <FieldScene />
             </Box>
+          </Stack>
+        </Container>
+      </Box>
+
+      {/* Sobre*/}
+      <Box
+        id="sobre"
+        sx={{
+          bgcolor: "background.paper",
+          py: { xs: 8, md: 10 },
+          textAlign: "center",
+        }}
+      >
+        <Container maxWidth="md">
+          <Stack
+            spacing={3}
+            alignItems={{ xs: "center", md: "flex-start" }}
+            textAlign={{ xs: "center", md: "left" }}
+          >
+            <Typography variant="h4" fontWeight={700}>
+              Sobre o FutSpot
+            </Typography>
+
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ maxWidth: 600, lineHeight: 1.7 }}
+            >
+              O FutSpot conecta jogadores e locadores de quadras em um só lugar.
+              Encontre horários disponíveis, reserve sua quadra favorita e
+              gerencie seus agendamentos de forma simples, rápida e sem
+              complicação.
+            </Typography>
+          </Stack>
+        </Container>
+      </Box>
+
+      {/* Contato*/}
+      <Box
+        id="contato"
+        sx={{
+          bgcolor: "background.default",
+          pt: { xs: 10, md: 14 },
+          pb: { xs: 8, md: 12 },
+        }}
+      >
+        <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3, md: 6 } }}>
+          <Stack spacing={4} alignItems="center" textAlign="center">
+            <Typography variant="h4" fontWeight={700}>
+              Fale com a gente
+            </Typography>
+
+            <Typography variant="body1" color="text.secondary">
+              Ficou com alguma dúvida ou quer levar o FutSpot para sua quadra?
+            </Typography>
+
+            <Stack direction="row" spacing={3} alignItems="center">
+              <IconButton
+                href="mailto:futspot.oficial@outlook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  bgcolor: "primary.main",
+                  color: "#fff",
+                  "&:hover": { bgcolor: "primary.dark" },
+                  width: 60,
+                  height: 60,
+                }}
+              >
+                <Email />
+              </IconButton>
+
+              <IconButton
+                href="https://www.instagram.com/futspot.oficial"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  bgcolor: "primary.main",
+                  color: "#fff",
+                  "&:hover": { bgcolor: "primary.dark" },
+                  width: 60,
+                  height: 60,
+                }}
+              >
+                <Instagram />
+              </IconButton>
+
+              <IconButton
+                href="https://wa.me/48998472801"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  bgcolor: "primary.main",
+                  color: "#fff",
+                  "&:hover": { bgcolor: "primary.dark" },
+                  width: 60,
+                  height: 60,
+                }}
+              >
+                <WhatsApp />
+              </IconButton>
+            </Stack>
+            
           </Stack>
         </Container>
       </Box>
