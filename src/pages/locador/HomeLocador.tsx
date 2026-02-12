@@ -374,7 +374,7 @@ export default function LocadorHome() {
                   <Button
                     variant="contained"
                     sx={{ mt: 2, textTransform: "none", borderRadius: 10 }}
-                    onClick={() => {}}
+                    onClick={openCreate}
                   >
                     Cadastrar novo local
                   </Button>
@@ -401,7 +401,7 @@ export default function LocadorHome() {
                           background: "#1E1E1E",
                           border: "1px solid rgba(0, 230, 118, 0.1)",
                           display: "flex",
-                          flexDirection: { xs: "column", sm: "row" }, // ✅ MOBILE: coluna
+                          flexDirection: { xs: "column", sm: "row" },
                           alignItems: { xs: "stretch", sm: "stretch" },
                           gap: 2,
                         }}
@@ -409,8 +409,8 @@ export default function LocadorHome() {
                         {/* IMAGEM */}
                         <Box
                           sx={{
-                            width: { xs: "100%", sm: 120 }, // ✅ mobile ocupa largura total
-                            height: { xs: 150, sm: "auto" }, // ✅ altura fixa no mobile
+                            width: { xs: "100%", sm: 120 },
+                            height: { xs: 150, sm: "auto" },
                             minHeight: { sm: 120 },
                             borderRadius: 2,
                             overflow: "hidden",
