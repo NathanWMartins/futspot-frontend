@@ -36,6 +36,14 @@ export async function registerRequest(params: {
     return data;
 }
 
+export async function verifyEmailRequest(params: {
+    email: string;
+    codigo: string;
+}): Promise<AuthResponse> {
+    const { data } = await api.post<AuthResponse>("/auth/verify-email", params);
+    return data;
+}
+
 export function extractToken(data: AuthResponse): string | null {
     return data.access_token ?? data.token ?? null;
 }

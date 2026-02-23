@@ -13,14 +13,18 @@ import {
   Stack,
   Snackbar,
   Alert,
+  Typography,
+  DialogActions,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
   extractToken,
   loginRequest,
   registerRequest,
+  verifyEmailRequest,
 } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";
+import { MuiOtpInput } from "mui-one-time-password-input";
 
 type AuthDialogProps = {
   open: boolean;
@@ -38,16 +42,20 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
+  const [step, setStep] = useState<"auth" | "verify">("auth");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [codigo, setCodigo] = useState("");
+
   const handleTabChange = (
     _: React.SyntheticEvent,
-    newValue: "login" | "register"
+    newValue: "login" | "register",
   ) => {
     if (newValue) setTab(newValue);
   };
 
   const handleTipoChange = (
     _: React.MouseEvent<HTMLElement>,
-    newTipo: "cliente" | "dono" | null
+    newTipo: "cliente" | "dono" | null,
   ) => {
     if (newTipo) setTipoUsuario(newTipo);
   };
@@ -70,19 +78,21 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
 
       const tipo = tipoUsuario === "cliente" ? "jogador" : "locador";
 
-      const data =
-        tab === "login"
-          ? await loginRequest({ email, senha, tipoUsuario: tipo })
-          : await registerRequest({ nome, email, senha, tipoUsuario: tipo });
+      if (tab === "login") {
+        const data = await loginRequest({ email, senha, tipoUsuario: tipo });
 
-      const token = extractToken(data);
+        const token = extractToken(data);
+        signIn({ user: data.user, token });
 
-      signIn({ user: data.user, token });
+        if (data.user.tipoUsuario === "jogador") navigate("/jogador/home");
+        else navigate("/locador/home");
 
-      if (data.user.tipoUsuario === "jogador") navigate("/jogador/home");
-      else navigate("/locador/home");
-
-      onClose();
+        onClose();
+      } else {
+        await registerRequest({ nome, email, senha, tipoUsuario: tipo });
+        setPendingEmail(email);
+        setStep("verify");
+      }
     } catch (err: any) {
       console.error("ERR AO REGISTRAR:", err?.response?.data || err);
 
@@ -95,6 +105,28 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
       } else {
         showError("Erro ao comunicar com o servidor.");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      setLoading(true);
+
+      const data = await verifyEmailRequest({ email: pendingEmail, codigo });
+
+      const token = extractToken(data);
+      signIn({ user: data.user, token });
+
+      if (data.user.tipoUsuario === "jogador") navigate("/jogador/home");
+      else navigate("/locador/home");
+
+      onClose();
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message || "Código inválido ou expirado.";
+      showError(msg);
     } finally {
       setLoading(false);
     }
@@ -121,7 +153,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
             textAlign: "center",
             fontWeight: 600,
             letterSpacing: 0.5,
-            fontFamily: "'Poppins', sans-serif"
+            fontFamily: "'Poppins', sans-serif",
           }}
         >
           {isLogin ? "Entrar no FutSpot" : "Criar conta no FutSpot"}
@@ -225,8 +257,8 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                 fullWidth
                 size="small"
                 variant="filled"
-                onChange={(e) => setEmail(e.target.value)}  
-                inputProps={{ "data-cy": "input-email" }}              
+                onChange={(e) => setEmail(e.target.value)}
+                inputProps={{ "data-cy": "input-email" }}
                 InputProps={{
                   disableUnderline: true,
                   sx: {
@@ -265,7 +297,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                 type="submit"
                 data-cy="btn-submit-login"
                 variant="contained"
-                disabled= {loading}
+                disabled={loading}
                 fullWidth
                 sx={{
                   mt: 1,
@@ -277,7 +309,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                   ":hover": {
                     boxShadow: "0 0 30px rgba(0, 230, 118, 0.8)",
                   },
-                  color: "#fff"
+                  color: "#fff",
                 }}
               >
                 {loading
@@ -285,13 +317,63 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                     ? "Entrando..."
                     : "Criando conta..."
                   : isLogin
-                  ? "Entrar"
-                  : "Criar conta"}
+                    ? "Entrar"
+                    : "Criar conta"}
               </Button>
             </Stack>
           </Box>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={step === "verify"} onClose={() => {}}
+        PaperProps={{
+          sx: {
+            bgcolor: "background.paper",
+            backgroundImage:
+              "linear-gradient(145deg, #101010 0%, #1b1b1b 50%, #050505 100%)",
+            borderRadius: 2,
+          },
+        }}
+      >
+        <DialogTitle>Verifique seu e-mail</DialogTitle>
+
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Enviamos um código de verificação para <b>{pendingEmail}</b>
+          </Typography>
+
+          <MuiOtpInput
+            value={codigo}
+            onChange={(newValue) => setCodigo(newValue)}
+            length={6}
+            TextFieldsProps={{
+              inputProps: {
+                inputMode: "numeric",
+              },
+            }}
+            sx={{
+              gap: 1,
+              "& .MuiInputBase-root": {
+                borderRadius: 1,
+                fontSize: "1.5rem",
+                fontWeight: 600,
+              },
+            }}
+          />
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            variant="contained"
+            onClick={handleVerifyCode}
+            disabled={loading || codigo.length !== 6}
+            sx={{borderRadius: 1, color: "#fff", mx: 2, mb: 1}}
+          >
+            Verificar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
