@@ -12,6 +12,7 @@ import {
   useMediaQuery,
   useTheme,
   IconButton,
+  Divider,
 } from "@mui/material";
 import FutspotLogo from "../assets/LogoFutSpotDark.png";
 import { AuthDialog } from "../components/AuthDialog";
@@ -50,12 +51,44 @@ export const LandingPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+
+    if (!element) return;
+
+    const headerOffset = 80;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = window.pageYOffset + elementPosition - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
+  };
+
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       <AppBar
         position="sticky"
         elevation={0}
-        sx={{ bgcolor: "background.default", mt: 2 }}
+        sx={{
+          mt: 1,
+          transition: "all 0.3s ease",
+          backgroundColor: scrolled ? "rgba(18, 18, 18, 0.6)" : "transparent",
+          backdropFilter: scrolled ? "blur(10px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
+        }}
       >
         <Toolbar disableGutters>
           <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 6, lg: 8 } }}>
@@ -64,38 +97,48 @@ export const LandingPage: React.FC = () => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                sx={{ cursor: "pointer" }}
-                onClick={scrollToTop}
-              >
-                <Box
-                  component="img"
-                  src={FutspotLogo}
-                  alt="FutSpot"
-                  sx={{ height: 40 }}
-                />
-
-                <Typography
-                  variant="h6"
-                  fontWeight={800}
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    color: "#00E676",
-                    pr: 5,
-                  }}
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ cursor: "pointer" }}
+                  onClick={scrollToTop}
                 >
-                  Fut<span style={{ color: "#fff" }}>Spot</span>
-                </Typography>
+                  <Box
+                    component="img"
+                    src={FutspotLogo}
+                    alt="FutSpot"
+                    sx={{ height: 40 }}
+                  />
+
+                  <Typography
+                    variant="h6"
+                    fontWeight={800}
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      color: "#00E676",
+                      pr: 5,
+                    }}
+                  >
+                    Fut<span style={{ color: "#fff" }}>Spot</span>
+                  </Typography>
+                </Stack>
 
                 {!isMobile && (
                   <>
-                    <Button href="#sobre" color="inherit">
+                    <Button
+                      color="inherit"
+                      onClick={() => scrollToSection("sobre")}
+                    >
                       Sobre
                     </Button>
-                    <Button href="#contato" color="inherit" sx={{ pl: 2 }}>
+
+                    <Button
+                      color="inherit"
+                      sx={{ pl: 2 }}
+                      onClick={() => scrollToSection("contato")}
+                    >
                       Contato
                     </Button>
                   </>
@@ -157,16 +200,16 @@ export const LandingPage: React.FC = () => {
                 sem dor de cabeça.
               </Typography>
 
-                <Stack direction="row" spacing={2} mt={4}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={handleOpenAuth}
-                    sx={{ color: "#fff", borderRadius: "8px" }}
-                  >
-                    Começar agora
-                  </Button>
-                </Stack>
+              <Stack direction="row" spacing={2} mt={4}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleOpenAuth}
+                  sx={{ color: "#fff", borderRadius: "8px" }}
+                >
+                  Começar agora
+                </Button>
+              </Stack>
             </Box>
 
             <Box sx={{ width: "100%", maxWidth: 520, ml: { md: -6, lg: -10 } }}>
@@ -214,8 +257,8 @@ export const LandingPage: React.FC = () => {
         id="contato"
         sx={{
           bgcolor: "background.default",
-          pt: { xs: 10, md: 14 },
-          pb: { xs: 8, md: 12 },
+          pt: { xs: 10, md: 8 },
+          pb: { xs: 8, md: 8 },
         }}
       >
         <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3, md: 6 } }}>
@@ -230,7 +273,7 @@ export const LandingPage: React.FC = () => {
 
             <Stack direction="row" spacing={3} alignItems="center">
               <IconButton
-                href="mailto:futspot.oficial@outlook.com"
+                href="mailto:futspot.app@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -274,8 +317,99 @@ export const LandingPage: React.FC = () => {
                 <WhatsApp />
               </IconButton>
             </Stack>
-            
           </Stack>
+        </Container>
+      </Box>
+
+      {/* Footer*/}
+      <Box
+        component="footer"
+        sx={{
+          bgcolor: "background.paper",
+          borderTop: "1px solid",
+          borderColor: "divider",
+          py: { xs: 6, md: 8 },
+        }}
+      >
+        <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 6, lg: 8 } }}>
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={6}
+            justifyContent="space-between"
+          >
+            <Box>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ mb: 2 }}
+              >
+                <Box
+                  component="img"
+                  src={FutspotLogo}
+                  alt="FutSpot"
+                  sx={{ height: 36 }}
+                />
+                <Typography
+                  variant="h6"
+                  fontWeight={800}
+                  sx={{
+                    fontFamily: "'Poppins', sans-serif",
+                    color: "#00E676",
+                  }}
+                >
+                  Fut<span style={{ color: "#fff" }}>Spot</span>
+                </Typography>
+              </Stack>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ maxWidth: 300 }}
+              >
+                Conectando jogadores e locadores de quadras de forma simples,
+                rápida e sem burocracia.
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                Institucional
+              </Typography>
+
+              <Stack spacing={1}>
+                <Button
+                  color="inherit"
+                  sx={{ justifyContent: "flex-start", p: 0 }}
+                  onClick={() => navigate("/termos-de-uso")}
+                >
+                  Termos de Uso e Política de Privacidade
+                </Button>
+              </Stack>
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                Contato
+              </Typography>
+
+              <Stack spacing={1}>
+                <Typography variant="body2" color="text.secondary">
+                  futspot.app@gmail.com
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  Brasil
+                </Typography>
+              </Stack>
+            </Box>
+          </Stack>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="body2" color="text.secondary" align="center">
+            © {new Date().getFullYear()} FutSpot. Todos os direitos reservados.
+          </Typography>
         </Container>
       </Box>
 

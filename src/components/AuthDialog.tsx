@@ -15,16 +15,19 @@ import {
   Alert,
   Typography,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
   extractToken,
   loginRequest,
+  redefinirSenhaRequest,
   registerRequest,
   verifyEmailRequest,
 } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";
 import { MuiOtpInput } from "mui-one-time-password-input";
+import axios from "axios";
 
 type AuthDialogProps = {
   open: boolean;
@@ -38,13 +41,12 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
   const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   const [step, setStep] = useState<"auth" | "verify">("auth");
   const [pendingEmail, setPendingEmail] = useState("");
   const [codigo, setCodigo] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleTabChange = (
     _: React.SyntheticEvent,
@@ -60,10 +62,20 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
     if (newTipo) setTipoUsuario(newTipo);
   };
 
-  const showError = (msg: string) => {
-    setSnackbarMessage(msg);
-    setSnackbarOpen(true);
-  };
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    msg: string;
+    severity: "success" | "error";
+  }>({
+    open: false,
+    msg: "",
+    severity: "success",
+  });
+
+  const showError = (msg: string) =>
+    setSnack({ open: true, msg, severity: "error" });
+  const showSuccess = (msg: string) =>
+    setSnack({ open: true, msg, severity: "success" });
 
   const isLogin = tab === "login";
   const isCliente = tipoUsuario === "cliente";
@@ -320,12 +332,61 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                     ? "Entrar"
                     : "Criar conta"}
               </Button>
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 1,
+                  cursor: isLogin && !resetLoading ? "pointer" : "default",
+                  color: "text.secondary",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  "&:hover":
+                    isLogin && !resetLoading ? { color: "#00a94f" } : {},
+                  opacity: resetLoading ? 0.7 : 1,
+                }}
+                onClick={async () => {
+                  if (!isLogin || resetLoading) return;
+
+                  try {
+                    setResetLoading(true);
+
+                    const res = await redefinirSenhaRequest({ email });
+                    showSuccess(res.message);
+                  } catch (error: unknown) {
+                    let message = "Erro ao solicitar redefinição de senha.";
+
+                    if (axios.isAxiosError(error)) {
+                      message = error.response?.data?.message || message;
+                    }
+
+                    showError(message);
+                  } finally {
+                    setResetLoading(false);
+                  }
+                }}
+              >
+                {isLogin ? (
+                  resetLoading ? (
+                    <>
+                      <CircularProgress size={16} />
+                      Enviando...
+                    </>
+                  ) : (
+                    "Esqueci minha senha"
+                  )
+                ) : (
+                  "Ao criar uma conta, você concorda com nossos termos de uso e política de privacidade."
+                )}
+              </Typography>
             </Stack>
           </Box>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={step === "verify"} onClose={() => {}}
+      <Dialog
+        open={step === "verify"}
+        onClose={() => {}}
         PaperProps={{
           sx: {
             bgcolor: "background.paper",
@@ -367,7 +428,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
             variant="contained"
             onClick={handleVerifyCode}
             disabled={loading || codigo.length !== 6}
-            sx={{borderRadius: 1, color: "#fff", mx: 2, mb: 1}}
+            sx={{ borderRadius: 1, color: "#fff", mx: 2, mb: 1 }}
           >
             Verificar
           </Button>
@@ -375,18 +436,18 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
       </Dialog>
 
       <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={snack.open}
+        autoHideDuration={3500}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          severity="error"
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
           variant="filled"
-          onClose={() => setSnackbarOpen(false)}
-          sx={{ bgcolor: "#f52121ff" }}
+          sx={{ width: "100%" }}
         >
-          {snackbarMessage}
+          {snack.msg}
         </Alert>
       </Snackbar>
     </>

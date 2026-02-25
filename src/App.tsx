@@ -16,17 +16,21 @@ import UserLayout from "./pages/UserLayout";
 import PerfilJogador from "./pages/jogador/PerfilJogador";
 import { NotificacoesPage } from "./pages/Notificacoes";
 import MensalidadeLocalPage from "./pages/locador/MensalidadeLocalPage";
+import TermosUso from "./pages/TermosUso";
+import RedefinirSenhaPage from "./pages/RedefinirSenhaPage";
 
 function App() {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/user" element={<UserLayout />}>
-          <Route path="perfil" element={<Perfil />} />
-          <Route path="notificacoes" element={<NotificacoesPage />} />
-        </Route>
+        <Route path="/termos-de-uso" element={<TermosUso />} />
+        <Route path="/reset-password" element={<RedefinirSenhaPage />} />
         <Route element={<RequireAuth />}>
+          <Route path="/user" element={<UserLayout />}>
+            <Route path="perfil" element={<Perfil />} />
+            <Route path="notificacoes" element={<NotificacoesPage />} />
+          </Route>
           {/* Locador Routes */}
           <Route path="/locador" element={<LocadorLayout />}>
             <Route path="home" element={<LocadorHome />} />
