@@ -2,28 +2,20 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  Chip,
   CircularProgress,
   IconButton,
-  MobileStepper,
   Snackbar,
   Alert,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
-import PlaceIcon from "@mui/icons-material/Place";
 import {
   type DiaSemana,
   type HorarioDia,
@@ -39,9 +31,8 @@ import {
   type TipoLocal,
 } from "../../services/locadoresService";
 import LocalDialog from "../../components/locador/DialogEditarLocal";
-import { CalendarMonth } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+import LocalCard from "../../components/locador/LocalCard";
 
 const dias: { id: DiaSemana; label: string }[] = [
   { id: 0, label: "Dom" },
@@ -157,37 +148,6 @@ function LocadorLocais() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // carrossel mobile
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchEndX, setTouchEndX] = useState<number | null>(null);
-
-  // se lista mudar, garante índice válido
-  useEffect(() => {
-    if (activeIndex > locais.length - 1)
-      setActiveIndex(Math.max(0, locais.length - 1));
-  }, [locais.length, activeIndex]);
-
-  const handleTouchStart = (e: React.TouchEvent) =>
-    setTouchStartX(e.touches[0].clientX);
-  const handleTouchMove = (e: React.TouchEvent) =>
-    setTouchEndX(e.touches[0].clientX);
-
-  const handleTouchEnd = () => {
-    if (touchStartX === null || touchEndX === null) return;
-
-    const diff = touchStartX - touchEndX;
-    const SWIPE_THRESHOLD = 50;
-
-    if (diff > SWIPE_THRESHOLD && activeIndex < locais.length - 1)
-      setActiveIndex((prev) => prev + 1);
-    else if (diff < -SWIPE_THRESHOLD && activeIndex > 0)
-      setActiveIndex((prev) => prev - 1);
-
-    setTouchStartX(null);
-    setTouchEndX(null);
-  };
-
   const formatTipoLocal = (tipo: TipoLocal) => {
     switch (tipo) {
       case "society":
@@ -280,6 +240,25 @@ function LocadorLocais() {
 
   const hasLocais = locais.length > 0;
 
+  const handleShare = async (local: any) => {
+    const url = `${window.location.origin}/jogador/local/${local.id}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: local.nome,
+          text: `Confira o local ${local.nome} para jogar!`,
+          url: url,
+        });
+      } catch (err) {
+        console.log("Compartilhamento cancelado");
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert("Link copiado para a área de transferência!");
+    }
+  };
+
   return (
     <>
       <Box
@@ -291,6 +270,7 @@ function LocadorLocais() {
           display: "flex",
           flexDirection: "column",
           gap: 3,
+          pl: { xs: 2, sm: 8 },
         }}
       >
         {/* LOADING */}
@@ -381,361 +361,36 @@ function LocadorLocais() {
               )}
             </Stack>
 
-            {/* DESKTOP */}
-            {!isMobile && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 2,
-                  justifyContent: "flex-start",
-                }}
-              >
-                {locais.map((local) => {
-                  const fotoPrincipal =
-                    local.fotos && local.fotos.length > 0
-                      ? local.fotos[0]
-                      : null;
-
-                  return (
-                    <Card
-                      key={local.id}
-                      sx={{
-                        background: "#151515",
-                        borderRadius: 3,
-                        width: "350px",
-                        border: "1px solid rgba(0, 230, 118, 0.15)",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <CardContent sx={{ p: 0 }}>
-                        <Box
-                          sx={{
-                            height: 200,
-                            background: fotoPrincipal
-                              ? `url(${fotoPrincipal}) center/cover no-repeat`
-                              : "radial-gradient(circle at top, #00E67633, #111)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {!fotoPrincipal && (
-                            <Stack alignItems="center" spacing={1}>
-                              <SportsSoccerIcon
-                                sx={{ fontSize: 40, opacity: 0.7 }}
-                              />
-                              <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                                Sem foto cadastrada
-                              </Typography>
-                            </Stack>
-                          )}
-                        </Box>
-
-                        <Box sx={{ p: 2.5 }}>
-                          <Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="flex-start"
-                          >
-                            <Box sx={{ flex: 1 }}>
-                              <Typography fontWeight={600}>
-                                {local.nome}
-                              </Typography>
-                              <Stack
-                                direction="row"
-                                spacing={0.5}
-                                alignItems="center"
-                                sx={{ mt: 0.5 }}
-                              >
-                                <PlaceIcon
-                                  sx={{ fontSize: 16, opacity: 0.7 }}
-                                />
-                                <Typography sx={{ fontSize: 14, opacity: 0.7 }}>
-                                  {local.endereco}
-                                </Typography>
-                              </Stack>
-
-                              <Chip
-                                label={formatTipoLocal(local.tipoLocal)}
-                                size="small"
-                                sx={{ mt: 1 }}
-                              />
-                            </Box>
-
-                            <IconButton
-                              onClick={() => openEdit(local)}
-                              sx={{
-                                bgcolor: "#00E676",
-                                color: "black",
-                                width: 34,
-                                height: 34,
-                                borderRadius: "50%",
-                                boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
-                                ml: 1,
-                                mr: 1,
-                                "&:hover": { bgcolor: "#00c964" },
-                              }}
-                            >
-                              <EditIcon sx={{ fontSize: 18 }} />
-                            </IconButton>
-                            <Tooltip title="Gerenciar mensalidades">
-                              <IconButton
-                                onClick={() =>
-                                  navigate(
-                                    `/locador/locais/${local.id}/mensalidade`,
-                                    { state: { nomeLocal: local.nome } },
-                                  )
-                                }
-                                sx={{
-                                  bgcolor: "#00E676",
-                                  color: "black",
-                                  width: 34,
-                                  height: 34,
-                                  borderRadius: "50%",
-                                  boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
-                                  "&:hover": { bgcolor: "#00c964" },
-                                  marginRight: "auto",
-                                }}
-                              >
-                                <CalendarMonth
-                                  sx={{
-                                    fontSize: 18,
-                                    color: "black",
-                                  }}
-                                />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Remover local">
-                            <IconButton
-                              onClick={() => {
-                                setLocalSelecionado(local);
-                                setOpenDelete(true);
-                              }}
-                              sx={{
-                                bgcolor: "#FF5252",
-                                color: "white",
-                                width: 34,
-                                height: 34,
-                                ml: 1,
-                                borderRadius: "50%",
-                                boxShadow: "0 0 12px rgba(255, 82, 82, 0.7)",
-                                "&:hover": { bgcolor: "#e04848" },
-                              }}
-                            >
-                              <DeleteIcon sx={{ fontSize: 20 }} />
-                            </IconButton>
-                            </Tooltip>
-                          </Stack>
-
-                          <Box sx={{ mt: 2 }}>
-                            <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                              Preço por hora
-                            </Typography>
-                            <Typography fontWeight={700} sx={{ mt: 0.3 }}>
-                              {formatCurrency(local.precoHora)}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </Box>
-            )}
-
-            {/* MOBILE – carrossel swipe */}
-            {isMobile && (
-              <Box sx={{ mt: 2 }}>
-                <Box
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  sx={{ overflow: "hidden" }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      transform: `translateX(-${activeIndex * 100}%)`,
-                      transition: "transform 0.35s ease-out",
-                    }}
-                  >
-                    {locais.map((local) => {
-                      const fotoPrincipal =
-                        local.fotos && local.fotos.length > 0
-                          ? local.fotos[0]
-                          : null;
-
-                      return (
-                        <Box key={local.id} sx={{ flex: "0 0 100%" }}>
-                          <Box
-                            sx={{
-                              height: 200,
-                              background: fotoPrincipal
-                                ? `url(${fotoPrincipal}) center/cover no-repeat`
-                                : "radial-gradient(circle at top, #00E67633, #111)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            {!fotoPrincipal && (
-                              <Stack alignItems="center" spacing={1}>
-                                <SportsSoccerIcon
-                                  sx={{ fontSize: 40, opacity: 0.7 }}
-                                />
-                                <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                                  Sem foto cadastrada
-                                </Typography>
-                              </Stack>
-                            )}
-                          </Box>
-
-                          <Card
-                            sx={{
-                              borderRadius: "24px 24px 0 0",
-                              mt: -3,
-                              pt: 3,
-                              background: "#151515",
-                              borderTop: "1px solid rgba(0, 230, 118, 0.25)",
-                            }}
-                          >
-                            <CardContent>
-                              <Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center"
-                              >
-                                <Box>
-                                  <Typography fontWeight={600}>
-                                    {local.nome}
-                                  </Typography>
-                                  <Stack
-                                    direction="row"
-                                    spacing={0.5}
-                                    alignItems="center"
-                                    sx={{ mt: 0.5 }}
-                                  >
-                                    <PlaceIcon
-                                      sx={{ fontSize: 16, opacity: 0.7 }}
-                                    />
-                                    <Typography
-                                      sx={{ fontSize: 14, opacity: 0.7 }}
-                                    >
-                                      {local.endereco}
-                                    </Typography>
-                                  </Stack>
-                                </Box>
-
-                                <Chip
-                                  label={formatTipoLocal(local.tipoLocal)}
-                                  size="small"
-                                />
-                              </Stack>
-
-                              <Box sx={{ mt: 2 }}>
-                                <Typography sx={{ fontSize: 13, opacity: 0.7 }}>
-                                  Preço por hora
-                                </Typography>
-                                <Typography fontWeight={700} sx={{ mt: 0.3 }}>
-                                  {formatCurrency(local.precoHora)}
-                                </Typography>
-                              </Box>
-
-                              <IconButton
-                                onClick={() => openEdit(local)}
-                                sx={{
-                                  bgcolor: "#00E676",
-                                  color: "black",
-                                  width: 40,
-                                  height: 40,
-                                  mt: 3,
-                                  mr: 1,
-                                  borderRadius: "50%",
-                                  boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
-                                  "&:hover": { bgcolor: "#00c964" },
-                                  marginRight: "auto",
-                                }}
-                              >
-                                <EditIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "black",
-                                  }}
-                                />
-                              </IconButton>
-                              <IconButton
-                                onClick={() =>
-                                  navigate(
-                                    `/locador/locais/${local.id}/mensalidade`,
-                                    { state: { nomeLocal: local.nome } },
-                                  )
-                                }
-                                sx={{
-                                  bgcolor: "#00E676",
-                                  color: "black",
-                                  width: 40,
-                                  height: 40,
-                                  mt: 3,
-                                  ml: 1,
-                                  borderRadius: "50%",
-                                  boxShadow: "0 0 12px rgba(0, 230, 118, 0.7)",
-                                  "&:hover": { bgcolor: "#00c964" },
-                                  marginRight: "auto",
-                                }}
-                              >
-                                <CalendarMonth
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "black",
-                                  }}
-                                />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => {
-                                  setLocalSelecionado(local);
-                                  setOpenDelete(true);
-                                }}
-                                sx={{
-                                  bgcolor: "#FF5252",
-                                  color: "white",
-                                  width: 40,
-                                  height: 40,
-                                  mt: 3,
-                                  ml: 1,
-                                  borderRadius: "50%",
-                                  boxShadow: "0 0 12px rgba(255, 82, 82, 0.7)",
-                                  "&:hover": { bgcolor: "#e04848" },
-                                }}
-                              >
-                                <DeleteIcon sx={{ fontSize: 20 }} />
-                              </IconButton>
-                            </CardContent>
-                          </Card>
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                </Box>
-
-                <MobileStepper
-                  variant="dots"
-                  steps={locais.length}
-                  position="static"
-                  activeStep={activeIndex}
-                  nextButton={null}
-                  backButton={null}
-                  sx={{
-                    mt: 1,
-                    bgcolor: "transparent",
-                    "& .MuiMobileStepper-dot": {
-                      bgcolor: "rgba(255,255,255,0.3)",
-                    },
-                    "& .MuiMobileStepper-dotActive": { bgcolor: "#00E676" },
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(auto-fill, minmax(320px, 1fr))",
+                },
+                gap: 3,
+              }}
+            >
+              {locais.map((local) => (
+                <LocalCard
+                  key={local.id}
+                  local={local}
+                  onEdit={openEdit}
+                  onDelete={(local) => {
+                    setLocalSelecionado(local);
+                    setOpenDelete(true);
                   }}
+                  onShare={handleShare}
+                  onMensalidade={(local) =>
+                    navigate(`/locador/locais/${local.id}/mensalidade`, {
+                      state: { nomeLocal: local.nome },
+                    })
+                  }
+                  formatTipoLocal={formatTipoLocal}
+                  formatCurrency={formatCurrency}
                 />
-              </Box>
-            )}
+              ))}
+            </Box>
           </>
         )}
 

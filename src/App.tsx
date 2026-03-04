@@ -18,6 +18,7 @@ import { NotificacoesPage } from "./pages/Notificacoes";
 import MensalidadeLocalPage from "./pages/locador/MensalidadeLocalPage";
 import TermosUso from "./pages/TermosUso";
 import RedefinirSenhaPage from "./pages/RedefinirSenhaPage";
+import { RequireRole } from "./routes/RequireRole";
 
 function App() {
   return (
@@ -32,22 +33,26 @@ function App() {
             <Route path="notificacoes" element={<NotificacoesPage />} />
           </Route>
           {/* Locador Routes */}
-          <Route path="/locador" element={<LocadorLayout />}>
-            <Route path="home" element={<LocadorHome />} />
-            <Route path="locais" element={<LocadorLocais />} />
-            <Route
-              path="locais/:id/mensalidade"
-              element={<MensalidadeLocalPage />}
-            />
-            <Route path="agenda" element={<AgendaLocador />} />
-            <Route path="jogador/:id" element={<PerfilJogador />} />
+          <Route element={<RequireRole role="locador" />}>
+            <Route path="/locador" element={<LocadorLayout />}>
+              <Route path="home" element={<LocadorHome />} />
+              <Route path="locais" element={<LocadorLocais />} />
+              <Route
+                path="locais/:id/mensalidade"
+                element={<MensalidadeLocalPage />}
+              />
+              <Route path="agenda" element={<AgendaLocador />} />
+              <Route path="jogador/:id" element={<PerfilJogador />} />
+            </Route>
           </Route>
           {/* Jogador Routes */}
-          <Route path="/jogador" element={<JogadorLayout />}>
-            <Route path="home" element={<JogadorHome />} />
-            <Route path="resultados" element={<ResultadosJogador />} />
-            <Route path="local/:id" element={<LocalDetalheJogador />} />
-            <Route path="agenda" element={<AgendaJogador />} />
+          <Route element={<RequireRole role="jogador" />}>
+            <Route path="/jogador" element={<JogadorLayout />}>
+              <Route path="home" element={<JogadorHome />} />
+              <Route path="resultados" element={<ResultadosJogador />} />
+              <Route path="local/:id" element={<LocalDetalheJogador />} />
+              <Route path="agenda" element={<AgendaJogador />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

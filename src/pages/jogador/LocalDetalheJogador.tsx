@@ -19,7 +19,10 @@ import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import LocalFotos from "../../components/jogador/LocalFotos";
 import { PriceTag } from "../../components/jogador/PriceTag";
 import type { HorarioFuncionamentoDTO, Modalidade } from "../../types/local";
-import { getDisponibilidadePorData } from "../../services/locaisService";
+import {
+  getDisponibilidadePorData,
+  getLocalById,
+} from "../../services/locaisService";
 import { criarAgendamento } from "../../services/agendamentoService";
 import MapDialog from "../../components/jogador/agenda/MapDialog";
 
@@ -95,12 +98,32 @@ export default function LocalDetalheJogador() {
     setSnack({ open: true, msg, severity: "success" });
 
   useEffect(() => {
+    const loadLocal = async () => {
+      if (!id) return;
+
+      if (local) return;
+
+      try {
+        const resp = await getLocalById(Number(id));
+        setLocal(resp);
+      } catch (error) {
+        console.error(error);
+        showError("Não foi possível carregar o local.");
+        navigate("/jogador/home");
+      }
+    };
+
+    loadLocal();
+  }, [id]);
+
+  useEffect(() => {
     const loadSlots = async () => {
       if (!data || !id) return;
       setCarregandoSlots(true);
 
       try {
         const resp = await getDisponibilidadePorData(Number(id), data);
+        console.log(resp);
         const slots = Array.isArray(resp?.slotsDisponiveis)
           ? resp.slotsDisponiveis
           : [];
@@ -206,7 +229,12 @@ export default function LocalDetalheJogador() {
           </Typography>
         </Stack>
 
-        <LocalFotos fotos={local.fotos ?? []} />
+        {local.fotos && local.fotos.length > 0 ? (
+          <LocalFotos fotos={local.fotos} />
+        ) : <Typography sx={{ fontStyle: "italic", opacity: 0.6, mb: 2 }}>
+            Local sem fotos cadastradas
+          </Typography>
+        }
 
         <Typography sx={{ mt: 2.5, mb: 1, fontWeight: 900, fontSize: 16 }}>
           Informações principais
@@ -266,8 +294,8 @@ export default function LocalDetalheJogador() {
                   justifyContent="flex-end"
                 >
                   {local.precoHora ? (
-                    <PriceTag value={local.precoHora } />
-                  ): (
+                    <PriceTag value={local.precoHora} />
+                  ) : (
                     <Typography sx={{ fontSize: 14, opacity: 0.7 }}>
                       Preço não informado
                     </Typography>
@@ -325,7 +353,8 @@ export default function LocalDetalheJogador() {
 
             {local.descricao ? (
               <Typography sx={{ opacity: 0.7, fontSize: 13 }}>
-                <span style={{ fontWeight: 800 }}> Descrição: </span> {local.descricao}
+                <span style={{ fontWeight: 800 }}> Descrição: </span>{" "}
+                {local.descricao}
               </Typography>
             ) : null}
           </Stack>

@@ -45,7 +45,7 @@ export type DisponibilidadePorDataResponse = {
 };
 
 export async function searchLocais(
-  filters: SearchFilters
+  filters: SearchFilters,
 ): Promise<LocalCardDTO[]> {
   const params: Record<string, string> = {};
 
@@ -62,7 +62,7 @@ export async function searchLocais(
 export async function getDisponibilidadePorData(localId: number, data: string) {
   const res = await api.get<DisponibilidadePorDataResponse>(
     `/locais/${localId}/disponibilidade/data`,
-    { params: { data } }
+    { params: { data } },
   );
   return {
     ...res.data,
@@ -70,4 +70,9 @@ export async function getDisponibilidadePorData(localId: number, data: string) {
       ? res.data.slotsDisponiveis
       : [],
   };
+}
+
+export async function getLocalById(id: number) {
+  const { data } = await api.get(`/locais/${id}`);
+  return data;
 }
